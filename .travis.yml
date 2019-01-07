@@ -4,5 +4,9 @@ cache:
   directories:
   - node_modules
 deploy:
+  provider: heroku
   api_key:
     secure: MBUxtIwXD0KCSSZFV7+fSrR/dohO9ui5rp8P3RKqcrRhhws1gH6bZdQYZCMwz4m1YjiKqme1SpFRhedqn2CCvk658xExbJuPad8lnkuojqj5MjU6EL2IDdnRW0TpaDmA3w1Fmk/87D+m3ZD//uErffqd0E3ZuoQ9CWYogXcE1U8e7KFryYPCqKZQfNXDjdQ+BddU0LO4AaJzo0wkF7n3cpp9S5MZIg4GpUFmRvwg6FLhjxIYFaSSXdbPQr2Xew30Ctmd6DxhMtmkMBjy0hj28F2as+/b3n1PQxFeZrHnOBQHs/F+YQ/jCf1ByLVnVSL4EeMgegWW9bVk7G8Hxl/AHLBuhHCV9D6Ni9quTxEzSS9V38wuyWbqhvJWg+qJKY4NU+0d1wLLNhxo5D1xB/vOx60AaqmGaXflSPcW6DgrP6fvopWROiqysQUCZnrFsSalHuyxusWN1IWCUYN/QJLFAw4FXuKHncaMrJPwmJIpcHz/1jpYEs9fQyvPmcM3eq7thzqMMrHBCjhixtSAuTgFdFz3yyrg7INTsuOEh8M2S+HgLP4PBbyBveFKPYfaPhmacoeujC5eMBFKaYDQhyzFtuBz/VZ5qokPHS16a7gEXVZjqjLRKPYkssWjTle60oChod+iZnCaKDbI9lbMTAZ/hw33ceuubYPGhyqTDasJQ74=
+  app: cryptic-atoll-34888
+  on:
+    repo: Shubanshii/mad-hatter-client
