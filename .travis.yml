@@ -5,9 +5,3 @@ cache:
   - node_modules
 env:
 - CI=true
-deploy:
-  api_key:
-    secure: FOK5e3pzu0yCqyPSPG1yd4YK+eV/HGB2mUWDbVqQFOrhnqMqk4MllnjGFZBjwoud+IAMAM3OSMtl5Q+CI6Qg6HI4AXu9tJKvZoqcG5McgT8nHjDoeXhODoiwpeFL59ZIkJ33dbFOZJ34jZVtLIRaPsSuwvQvSnsFXYRSBxTpb8eUR4Ma/J/DUvFWnim2pBp12cbUGjw4BaPzFIqxCfNYOmpWmPZE9t7Yq5UIIG1HAOih7T7HOYRreHFovVwoeQMjzoyI8w1pNqiaX4/3Ra07FL4lGjVA5DycBZhXmyhI6RglRBYIVYt8eQZ+/ozCL2l7HoK+7BzeHouwiGmNrqTBW5BrZPqVEF2f6w1YEOQf0kn4FowduPaH10jqd5r+eL9D5Hxyq6TGBpx2KhHZoydrRH+99CHom1xaiUtkIzQKr1E3n/PvZ5AvN+5ZWmMQT01q3fui7ReGFIllhazYN3i4OMmNJUVbYAfoGXQ5e2UfkFc3FKr7+hjJ9jkyBuA2wr3oBG/SXV+EtgDyQEeY7PD8V1l4OF0h28FJRKaynAYf53e1XazgvaCuwrc317HE124Ct4hP9t0E6crBkpi4ldbjnJaVRzQqFeI8uMwsQl3VezGdf+tCqLWcBIqrbwEqoXwb9G+s44fp7d6QLAlyKIsOczUMfknmfiiPWac58CM5Bb0=
-  app: cryptic-atoll-34888
-  on:
-    repo: Shubanshii/mad-hatter-client
