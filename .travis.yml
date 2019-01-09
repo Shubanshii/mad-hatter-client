@@ -9,6 +9,6 @@ deploy:
   provider: heroku
   api_key:
     secure: BI1bMgpWG9QgA5C9PWLfTld+gnGoQ6Pk8JW6BSZorvmrtiPqsXaMRxcT00WdCX1AmExV7y1fc3rWIvXhFCsLgeV50RqE06PbeDPvEXoLnm9tqLibrLtK7Vug2i07Cc3D/+/Lzb/hw5jXGVAwCo8644jOb+AmA2ddW4lviFfTk0nvfFCh04GMW7xIEIaHwmhNw48s+bZAlAX+Rf+WPrxeRORy2C87ENXCuY5AP2ao/1Az+yRx1UaRjyUC6/22WULz7rrJl8d+eui8l5YOWph+H7T/ac1HlDXGyhV6UAKoAkFAxc1T512ovht+fE0FcWQRqice8Zfeg9zb+tlgaS9QH0CjE0HSxLbrM4Oc+CBt0NFcICLFyMZ9I/22sjngFvwMhcLWpNeHKkPNiF4f2GmrfQ+oHzLvHzCixcjoJsE8EMRg7Ewxt2QgCvxzOMpH9ZZv1lHrJU0WUn92y36QHnZanUhdaFD5eK9WlngNcqvxf39D/Ixbh1r1RxQK4Ea6HzWY8uafSBz0Y9ur6hzee/3c/dE3IAwe7fCT+9lXpjjWziYcw3ixDegpZFz8minzrfpbAbuKFp3I02KjSQEH8nmqsYeRxmmfWNgINWdhDINu6jQXMdW+a1+t0/xmSxSa8bVtXwxadK3MPEIEfR+j+e2yy7RuCBCdRKwexyBh3FWj8iY=
-  app: mad-hatter-client
+  app: cryptic-atoll-34888
   on:
     repo: Shubanshii/mad-hatter-client
