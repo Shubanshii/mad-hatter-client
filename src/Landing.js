@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import SignUp from './SignUp';
 
 class Landing extends Component {
   render() {
@@ -18,6 +19,12 @@ class Landing extends Component {
 
             So basically ... it's an app for people who want to play Texas Hold'Em, but dont't have poker chips or a decent substitute, ya dig?
             </p>
+          </section>
+          <section>
+            <header>
+                <h3>Start Playing Now</h3>
+            </header>
+            <SignUp />
           </section>
         </main>
       </div>
