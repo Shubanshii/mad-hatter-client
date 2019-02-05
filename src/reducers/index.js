@@ -4,8 +4,12 @@
 console.log(actions);
   const initialState = {
       playerCount: 2,
-      mode: 'Small Blind',
+      toPlay: 1,
+      // mode: 'Small Blind',
+      raised: false,
       headsUp: true,
+      streets: ['Preflop', 'Flop', 'Turn', 'River'],
+      street: 'Preflop',
       playerInfo: [
         {
           name: 'Player 1',
@@ -23,18 +27,23 @@ console.log(actions);
         }
       ],
       potSize: 0,
+      // we'll figure out how to add more positions later
+      positions: ["Dealer", "Big Blind"],
       position: "Dealer",
       dealer: 'Player 1',
+      maxBuyIn: 100
       // playerTurn: 'Player 1',
-      round: 'Pre-Flop'
   };
 
+  // only for heads up dealer preflop right now
   export const hatterReducer = (state=initialState, action) => {
       if (action.type === actions.CHECK) {
-        console.log(action.playerIndex);
-        if(action.playerIndex < state.playerInfo.length) {
+        // can't check when small blind or dealer preflop heads up.  can only complete
+        if (state.headsUp === true && state.raised === false && state.position === 'Dealer' ) {
+          console.log('Game is broken');
+        } else {
           let newIndex = action.playerIndex + 1;
-          console.log(newIndex);
+
           return Object.assign({}, state, {
             // playerInfo[action.playerIndex].playerTurn: false,
             // playerInfo[newIndex].playerTurn: true
@@ -44,29 +53,96 @@ console.log(actions);
               if(player.playerIndex === action.playerIndex) {
                 player.playerTurn = false;
               }
-              console.log(player);
+              else if (player.playerIndex === newIndex) {
+                player.playerTurn = true;
+              }
+              // console.log(player);
               return player;
-            })
-
+            }),
+            position: state.positions[newIndex]
           });
         }
-      //   return Object.assign({}, state, {
-      //     items: [...state.items, action.item]
-      // });
-          // return newState;
+
      }
-      // else if (action.type === actions.CALL) {
-      //     // ... do something to generate new state
-      //     // return newState;
-      // }
+      else if (action.type === actions.CALL) {
+        if (state.headsUp === true && state.raised === false && state.position === 'Dealer' ) {
+          let newIndex = action.playerIndex + 1;
+
+            return Object.assign({}, state, {
+
+              playerInfo: state.playerInfo.map(player => {
+                console.log(player);
+                if(player.playerIndex === action.playerIndex) {
+                  player.playerTurn = false;
+                  player.stackSize = player.stackSize - (state.maxBuyIn/200);
+                }
+                else if (player.playerIndex === newIndex) {
+                  player.playerTurn = true;
+                }
+                return player;
+              }),
+              position: state.positions[newIndex]
+            });
+        }
+      }
+      else if (action.type === actions.FOLD) {
+        console.log('fold working');
+        if (state.headsUp === true && state.raised === false && state.position === 'Dealer' ) {
+          let newIndex = action.playerIndex + 1;
+
+            return Object.assign({}, state, {
+
+              playerInfo: state.playerInfo.map(player => {
+                // console.log(player);
+                if(player.playerIndex === action.playerIndex) {
+                  player.playerTurn = false;
+                }
+                else if (player.playerIndex === newIndex) {
+                  // player.playerTurn = true;
+                  player.stackSize = player.stackSize + (state.maxBuyIn / 200);
+                }
+                console.log(state);
+                return player;
+              }),
+              position: state.positions[newIndex]
+            });
+
+
+        }
+      }
+      else if (action.type === actions.RAISE) {
+          // console.log('index', action.playerIndex);
+          // console.log('amount', action.amount);
+          if(action.amount < (state.toPlay * 2)) {
+            console.log("Must raise at least twice the big blind or twice the" +
+            "bet or raise.");
+          }
+          if (state.headsUp === true && state.raised === false && state.position === 'Dealer' ) {
+            let newIndex = action.playerIndex + 1;
+
+              return Object.assign({}, state, {
+
+                playerInfo: state.playerInfo.map(player => {
+                  console.log(player);
+                  if(player.playerIndex === action.playerIndex) {
+                    state.toPlay = action.amount;
+                    player.stackSize = player.stackSize - action.amount;
+                    player.playerTurn = false;
+                  }
+                  else if (player.playerIndex === newIndex) {
+                    player.playerTurn = true;
+                  }
+                  return player;
+                }),
+                position: state.positions[newIndex]
+              });
+          }
+      }
       // else if (action.type === actions.BET) {
       //     // ... do something to generate new state
       //     // return newState;
       // }
-      // else if (action.type === actions.RAISE) {
-      //     // ... do something to generate new state
-      //     // return newState;
-      // }
+
       // else if (action.type === actions.FOLD) {
       //     // ... do something to generate new state
       //     // return newState;

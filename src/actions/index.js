@@ -4,11 +4,26 @@ export const check = playerIndex => ({
   playerIndex
 });
 
-// export const CALL = 'CALL';
-// export const call = amount => ({
-//   type: CALL,
-//   amount
-// });
+export const CALL = 'CALL';
+export const call = (amount, playerIndex) => ({
+  type: CALL,
+  amount,
+  playerIndex
+});
+
+export const FOLD = 'FOLD';
+export const fold = playerIndex => ({
+  type: FOLD,
+  playerIndex
+});
+
+export const RAISE = 'RAISE';
+export const raise = (amount, playerIndex) => ({
+  type: RAISE,
+  amount,
+  playerIndex
+});
+
 //
 // export const BET = 'BET';
 // export const bet = amount => ({
@@ -16,16 +31,9 @@ export const check = playerIndex => ({
 //     amount
 // });
 //
-// export const RAISE = 'RAISE';
-// export const raise = amount => ({
-//   type: RAISE,
-//   amount
-// });
+
 //
-// export const FOLD = 'FOLD';
-// export const fold = () => ({
-//   type: FOLD
-// });
+
 //
 // export const INCREASE_STACK_SIZE = 'INCREASE_STACK_SIZE';
 // export const increaseStackSize = amount => ({

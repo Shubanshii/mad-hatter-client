@@ -4,7 +4,7 @@ class PlayerCircle extends Component {
   render() {
     return (
       <div className="App">
-        <ul class='circle-container'>
+        <ul className='circle-container'>
           <li>
             <h3>Player 1</h3>
             <h5>100</h5>
