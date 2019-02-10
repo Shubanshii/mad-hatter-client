@@ -2,9 +2,13 @@
   import PlayerCircle from './PlayerCircle';
   import PlayerDecision from './PlayerDecision';
   import Notification from './Notification';
+  import {connect} from 'react-redux';
+  import {beginGame} from './actions';
 
-  class Game extends Component {
+  export class Game extends Component {
     render() {
+      this.props.dispatch(beginGame());
+      //this.props.dispatch(beginHand());
       return (
         <div className="App">
           <main role="main">
@@ -13,11 +17,19 @@
             </header>
             <Notification />
             <PlayerCircle />
-            <PlayerDecision potSize={1.50} smallPlayer={1} playerTurn={1} />
+            <PlayerDecision />
           </main>
         </div>
       );
     }
   }
 
-  export default Game;
+  Game.defaultProps = {
+      // title: 'Board'
+  };
+
+  const mapStateToProps = state => ({
+    playerCount: state.playerCount
+  });
+
+  export default connect(mapStateToProps)(Game);

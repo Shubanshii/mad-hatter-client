@@ -1,7 +1,6 @@
 // import {CHECK, CALL, BET, RAISE, FOLD, UPDATE_MODE, INCREASE_STACK_SIZE, DECREASE_STACK_SIZE, INCREASE_POT_SIZE, DECREASE_POT_SIZE,
 //   ROTATE_PLAYER, ROTATE_ROUND, END_HAND, ROTATE_DEALER} as actions from '../actions';
   import * as actions from '../actions';
-console.log(actions);
   const initialState = {
       playerCount: 2,
       toPlay: 1,
@@ -16,14 +15,18 @@ console.log(actions);
           stackSize: 100,
           inHand: true,
           playerTurn: true,
-          playerIndex: 0
+          playerIndex: 0,
+          smallBlind: true,
+          bigBlind: false
         },
         {
           name: 'Player 2',
           stackSize: 100,
           inHand: true,
           playerTurn: false,
-          playerIndex: 1
+          playerIndex: 1,
+          smallBlind: false,
+          bigBlind: true
         }
       ],
       potSize: 0,
@@ -37,7 +40,21 @@ console.log(actions);
 
   // only for heads up dealer preflop right now
   export const hatterReducer = (state=initialState, action) => {
-      if (action.type === actions.CHECK) {
+    if (action.type === actions.BEGIN_GAME) {
+      let newState = state;
+      newState.playerInfo[0].stackSize = newState.playerInfo[0].stackSize - .5;
+      newState.playerInfo[1].stackSize = newState.playerInfo[1].stackSize - 1;
+      newState.potSize = 1.5;
+      return Object.assign({}, state, {
+        newState
+      });
+
+    }
+      else if(action.type === actions.BEGIN_HAND) {
+        console.log('Begin hand working');
+        console.log('begin hand state', state);
+      }
+      else if (action.type === actions.CHECK) {
         // can't check when small blind or dealer preflop heads up.  can only complete
         if (state.headsUp === true && state.raised === false && state.position === 'Dealer' ) {
           console.log('Game is broken');
@@ -87,28 +104,35 @@ console.log(actions);
       }
       else if (action.type === actions.FOLD) {
         console.log('fold working');
-        if (state.headsUp === true && state.raised === false && state.position === 'Dealer' ) {
-          let newIndex = action.playerIndex + 1;
-
-            return Object.assign({}, state, {
-
-              playerInfo: state.playerInfo.map(player => {
-                // console.log(player);
-                if(player.playerIndex === action.playerIndex) {
-                  player.playerTurn = false;
-                }
-                else if (player.playerIndex === newIndex) {
-                  // player.playerTurn = true;
-                  player.stackSize = player.stackSize + (state.maxBuyIn / 200);
-                }
-                console.log(state);
-                return player;
-              }),
-              position: state.positions[newIndex]
-            });
-
-
-        }
+        // console.log(action.playerIndex);
+        // return Object.assign({}, state, {
+        //   playerInfo: state.playerInfo.forEach(player => {
+        //     if (player.playerTurn === true) {
+        //       player.playerTurn = false;
+        //     }
+        //   })
+        // });
+        // if (state.headsUp === true && state.raised === false && state.position === 'Dealer' ) {
+        //   let newIndex = action.playerIndex + 1;
+        //     return Object.assign({}, state, {
+        //
+        //       playerInfo: state.playerInfo.map(player => {
+        //         // console.log(player);
+        //         if(player.playerIndex === action.playerIndex) {
+        //           player.playerTurn = false;
+        //         }
+        //         else if (player.playerIndex === newIndex) {
+        //           player.playerTurn = true;
+        //           // player.stackSize = player.stackSize + (state.maxBuyIn / 200);
+        //           player.stackSize = player.stackSize + state.potSize;
+        //
+        //         }
+        //         console.log(state);
+        //         return player;
+        //       }),
+        //       position: state.positions[newIndex]
+        //     });
+        //   }
       }
       else if (action.type === actions.RAISE) {
           // console.log('index', action.playerIndex);

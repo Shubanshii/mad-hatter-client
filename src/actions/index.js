@@ -1,3 +1,9 @@
+export const BEGIN_GAME = 'BEGIN_GAME';
+export const beginGame = () => ({
+  type: BEGIN_GAME,
+  
+})
+
 export const CHECK = 'CHECK';
 export const check = playerIndex => ({
   type: CHECK,
@@ -24,6 +30,18 @@ export const raise = (amount, playerIndex) => ({
   playerIndex
 });
 
+export const DECREASE_STACK_SIZE = 'DECREASE_STACK_SIZE';
+export const decreaseStackSize = (amount, playerIndex) => ({
+  type: DECREASE_STACK_SIZE,
+  amount,
+  playerIndex
+});
+
+export const BEGIN_HAND = 'BEGIN_HAND';
+export const beginHand = () => ({
+  type: BEGIN_HAND
+});
+
 //
 // export const BET = 'BET';
 // export const bet = amount => ({
@@ -38,12 +56,6 @@ export const raise = (amount, playerIndex) => ({
 // export const INCREASE_STACK_SIZE = 'INCREASE_STACK_SIZE';
 // export const increaseStackSize = amount => ({
 //   type: INCREASE_STACK_SIZE,
-//   amount
-// });
-//
-// export const DECREASE_STACK_SIZE = 'DECREASE_STACK_SIZE';
-// export const decreaseStackSize = amount => ({
-//   type: DECREASE_STACK_SIZE,
 //   amount
 // });
 //
