@@ -7,8 +7,10 @@ export class PlayerDecision extends Component {
   fold() {
     // console.log(playerCount);
     // this.props.dispatch(fold(playerIndex));
+
+    // console.log(this.props.playerInfo);
+    console.log('button working');
     this.props.dispatch(fold());
-    console.log(this.props.playerInfo);
   }
   render() {
     // const playerCount = this.props.playerCount;
@@ -41,7 +43,7 @@ PlayerDecision.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-  // playerInfo: state.playerInfo
+  playerInfo: state.playerInfo,
   potSize: state.potSize
 });
 

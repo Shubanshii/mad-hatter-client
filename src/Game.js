@@ -3,12 +3,17 @@
   import PlayerDecision from './PlayerDecision';
   import Notification from './Notification';
   import {connect} from 'react-redux';
-  import {beginGame} from './actions';
+  import {beginGame, fold} from './actions';
 
   export class Game extends Component {
-    render() {
+    componentDidMount() {
       this.props.dispatch(beginGame());
+  }
+
+    render() {
       //this.props.dispatch(beginHand());
+
+
       return (
         <div className="App">
           <main role="main">
@@ -29,7 +34,8 @@
   };
 
   const mapStateToProps = state => ({
-    playerCount: state.playerCount
+    playerCount: state.playerCount,
+    playerInfo: state.playerInfo
   });
 
   export default connect(mapStateToProps)(Game);

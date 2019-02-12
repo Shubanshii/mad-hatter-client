@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 
 export class PlayerCircle extends Component {
   render() {
-    console.log(this.props.playerInfo);
+    // console.log(this.props.stackSizes);
     return (
       <div className="App">
         <ul className='circle-container'>
@@ -15,6 +15,7 @@ export class PlayerCircle extends Component {
           <li>
             <h3>Player 2</h3>
             <h5>{this.props.playerInfo[1].stackSize}</h5>
+
           </li>
         </ul>
       </div>

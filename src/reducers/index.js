@@ -4,6 +4,7 @@
   const initialState = {
       playerCount: 2,
       toPlay: 1,
+      handIndex: 1,
       // mode: 'Small Blind',
       raised: false,
       headsUp: true,
@@ -41,14 +42,30 @@
   // only for heads up dealer preflop right now
   export const hatterReducer = (state=initialState, action) => {
     if (action.type === actions.BEGIN_GAME) {
-      let newState = state;
-      newState.playerInfo[0].stackSize = newState.playerInfo[0].stackSize - .5;
-      newState.playerInfo[1].stackSize = newState.playerInfo[1].stackSize - 1;
-      newState.potSize = 1.5;
+      console.log('working');
       return Object.assign({}, state, {
-        newState
-      });
-
+        ...state,
+        playerInfo: state.playerInfo.map(player => {
+          console.log(player);
+          if(player.smallBlind === true) {
+            player.stackSize -= (state.maxBuyIn/200);
+            return player;
+          }
+          else if (player.bigBlind === true) {
+            player.stackSize -= (state.maxBuyIn/100);
+            return player;
+          }
+        }),
+        potSize: (state.maxBuyIn/200) + (state.maxBuyIn/100)
+      })
+    }
+    else if (action.type === actions.NEXT_HAND) {
+      let handIndex = state.handIndex;
+      handIndex++;
+      console.log(state.handIndex);
+      return Object.assign({}, state, {
+        ...state
+      })
     }
       else if(action.type === actions.BEGIN_HAND) {
         console.log('Begin hand working');
@@ -104,35 +121,62 @@
       }
       else if (action.type === actions.FOLD) {
         console.log('fold working');
-        // console.log(action.playerIndex);
-        // return Object.assign({}, state, {
-        //   playerInfo: state.playerInfo.forEach(player => {
-        //     if (player.playerTurn === true) {
-        //       player.playerTurn = false;
-        //     }
-        //   })
-        // });
-        // if (state.headsUp === true && state.raised === false && state.position === 'Dealer' ) {
-        //   let newIndex = action.playerIndex + 1;
-        //     return Object.assign({}, state, {
+        let inHandCount = 0;
+        for (var i = 0; i < state.playerInfo.length; i++) {
+          if(state.playerInfo[i].inHand === true) {
+            inHandCount++;
+          }
+        }
+        console.log(inHandCount);
+        if(state.headsUp === true) {
+          console.log('heads up fold working');
+          return Object.assign({}, state, {
+            ...state,
+            playerInfo: state.playerInfo.map(player => {
+              if(player.playerTurn === true) {
+                player.playerTurn = false;
+                player.inHand = false;
+                inHandCount--;
+                return player;
+              }
+              else if (inHandCount === 1) {
+                if(player.inHand === true) {
+                  player.stackSize += state.potSize;
+                  return player;
+                }
+              }
+            })
+          });
+
+        }
+
+        // // console.log(action.playerIndex);
+        // let playerInfo = state.playerInfo
+        // let inHand;
+        // let inHandCount = 0;
+        // for (var i = 0; i< state.playerInfo.length; i++) {
+        //   if(playerInfo[i].playerTurn === true) {
+        //     playerInfo[i].inHand = false;
+        //     playerInfo[i].playerTurn = false;
         //
-        //       playerInfo: state.playerInfo.map(player => {
-        //         // console.log(player);
-        //         if(player.playerIndex === action.playerIndex) {
-        //           player.playerTurn = false;
-        //         }
-        //         else if (player.playerIndex === newIndex) {
-        //           player.playerTurn = true;
-        //           // player.stackSize = player.stackSize + (state.maxBuyIn / 200);
-        //           player.stackSize = player.stackSize + state.potSize;
-        //
-        //         }
-        //         console.log(state);
-        //         return player;
-        //       }),
-        //       position: state.positions[newIndex]
-        //     });
         //   }
+        // }
+        // for (var i = 0; i < state.playerInfo.length; i++) {
+        //   console.log(playerInfo[i].inHand);
+        //   if(playerInfo[i].inHand === true) {
+        //     inHandCount++;
+        //   }
+        // }
+        // if (inHandCount === 1) {
+        //   for (var i = 0; i< state.playerInfo.length; i++) {
+        //     if(playerInfo[i].inHand === true) {
+        //       playerInfo[i].stackSize += state.potSize;
+        //       return Object.assign({}, state, {
+        //         playerInfo
+        //       })
+        //     }
+        //   }
+        // }
       }
       else if (action.type === actions.RAISE) {
           // console.log('index', action.playerIndex);

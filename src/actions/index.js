@@ -1,8 +1,13 @@
 export const BEGIN_GAME = 'BEGIN_GAME';
 export const beginGame = () => ({
   type: BEGIN_GAME,
-  
-})
+
+});
+
+export const NEXT_HAND = 'NEXT_HAND';
+export const nextHand = () => ({
+  type: NEXT_HAND
+});
 
 export const CHECK = 'CHECK';
 export const check = playerIndex => ({
