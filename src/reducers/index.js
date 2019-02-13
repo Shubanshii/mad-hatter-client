@@ -122,6 +122,7 @@
       else if (action.type === actions.FOLD) {
         console.log('fold working');
         let inHandCount = 0;
+        let handIndex = 1;
         for (var i = 0; i < state.playerInfo.length; i++) {
           if(state.playerInfo[i].inHand === true) {
             inHandCount++;
@@ -130,6 +131,7 @@
         console.log(inHandCount);
         if(state.headsUp === true) {
           console.log('heads up fold working');
+          // use promise to increment toPlay
           return Object.assign({}, state, {
             ...state,
             playerInfo: state.playerInfo.map(player => {
@@ -142,10 +144,12 @@
               else if (inHandCount === 1) {
                 if(player.inHand === true) {
                   player.stackSize += state.potSize;
+                  handIndex++;
                   return player;
                 }
               }
-            })
+            }),
+            handIndex
           });
 
         }
