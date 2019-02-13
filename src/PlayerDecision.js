@@ -1,16 +1,62 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import {fold} from './actions';
+import {fold, beginHand} from './actions';
 
 
 export class PlayerDecision extends Component {
   fold() {
+    //check if hand is over
     // console.log(playerCount);
     // this.props.dispatch(fold(playerIndex));
 
     // console.log(this.props.playerInfo);
-    console.log('button working');
-    this.props.dispatch(fold());
+    // console.log('button working');
+    let playerInfo = this.props.playerInfo;
+    console.log(playerInfo);
+    // console.log('fold working');
+    let inHandCount = 0;
+    //
+    for (var i = 0; i < playerInfo.length; i++) {
+      if(playerInfo[i].inHand === true) {
+        inHandCount++;
+      }
+    }
+    console.log(inHandCount);
+
+    if(inHandCount === 2) {
+      function switchBlinds(player) {
+        if(player.smallBlind) {
+          player.smallBlind = false;
+          player.bigBlind = true;
+        }
+        else if (player.bigBlind) {
+          player.smallBlind = true;
+          player.bigBlind = false;
+        }
+      }
+      console.log('heads up fold working');
+      playerInfo = playerInfo.map(player => {
+        if(player.playerTurn === true) {
+          player.playerTurn = false;
+          player.inHand = false;
+          switchBlinds(player);
+          inHandCount--;
+        }
+        else if(player.playerTurn === false && player.inHand === true && inHandCount === 1) {
+          switchBlinds(player);
+          player.stackSize += this.props.potSize;
+        }
+        return player;
+      });
+
+      if(inHandCount === 1) {
+        console.log(playerInfo);
+        console.log('handcount is one');
+        this.props.dispatch(beginHand(playerInfo));
+
+      }
+    }
+
   }
   render() {
     // const playerCount = this.props.playerCount;
@@ -44,7 +90,8 @@ PlayerDecision.defaultProps = {
 
 const mapStateToProps = state => ({
   playerInfo: state.playerInfo,
-  potSize: state.potSize
+  potSize: state.potSize,
+  handOver: state.handOver
 });
 
 export default connect(mapStateToProps)(PlayerDecision);

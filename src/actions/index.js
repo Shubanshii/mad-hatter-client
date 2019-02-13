@@ -4,6 +4,11 @@ export const beginGame = () => ({
 
 });
 
+export const BEGIN_HAND = 'BEGIN_HAND';
+export const beginHand = playerInfo => ({
+  type: BEGIN_HAND,
+  playerInfo
+});
 export const NEXT_HAND = 'NEXT_HAND';
 export const nextHand = () => ({
   type: NEXT_HAND
@@ -42,10 +47,6 @@ export const decreaseStackSize = (amount, playerIndex) => ({
   playerIndex
 });
 
-export const BEGIN_HAND = 'BEGIN_HAND';
-export const beginHand = () => ({
-  type: BEGIN_HAND
-});
 
 //
 // export const BET = 'BET';

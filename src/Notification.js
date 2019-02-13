@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import {nextHand} from './actions';
+import {beginHand} from './actions';
 
 export class Notification extends Component {
   // componentDidMount() {
@@ -14,10 +14,27 @@ export class Notification extends Component {
   //     this.props.dispatch(nextHand());
   //   }
   // }
+  // componentDidUpdate() {
+  //   if(this.props.handOver) {
+  //     this.props.dispatch(beginHand());
+  //   }
+  //
+  // }
 
   render() {
 
+    let playerInfo = this.props.playerInfo;
+    let smallBlind;
+    let bigBlind;
+    for(var i = 0; i< playerInfo.length; i++) {
+      if(playerInfo[i].smallBlind === true) {
+        smallBlind = playerInfo[i].name;
+      }
+      else if(playerInfo[i].bigBlind === true) {
+        bigBlind = playerInfo[i].name;
+      }
 
+    }
     // const player = this.props.playerInfo.find(player => player.playerTurn === true);
     // console.log(this.props.playerInfo);
     // console.log('playerturn', player.name);
@@ -27,6 +44,8 @@ export class Notification extends Component {
         <h3>Street: {this.props.street}</h3>
         {/*<h3>Turn: {player.name}</h3>*/}
         <h3>Decision: </h3>
+        <h3>Small Blind: {smallBlind}</h3>
+        <h3>Big Blind: {bigBlind}</h3>
       </div>
     );
   }
@@ -39,7 +58,8 @@ Notification.defaultProps = {
 const mapStateToProps = state => ({
   street: state.street,
   handIndex: state.handIndex,
-  playerInfo: state.playerInfo
+  playerInfo: state.playerInfo,
+  handOver: state.handOver
 });
 
 export default connect(mapStateToProps)(Notification);
