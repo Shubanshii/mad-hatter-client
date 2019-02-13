@@ -41,23 +41,38 @@
 
   // only for heads up dealer preflop right now
   export const hatterReducer = (state=initialState, action) => {
+    let modifiedState = Object.assign({}, state, {});
     if (action.type === actions.BEGIN_GAME) {
       console.log('working');
-      return Object.assign({}, state, {
-        ...state,
-        playerInfo: state.playerInfo.map(player => {
-          console.log(player);
-          if(player.smallBlind === true) {
-            player.stackSize -= (state.maxBuyIn/200);
-            return player;
-          }
-          else if (player.bigBlind === true) {
-            player.stackSize -= (state.maxBuyIn/100);
-            return player;
-          }
-        }),
-        potSize: (state.maxBuyIn/200) + (state.maxBuyIn/100)
-      })
+
+      modifiedState.potSize += (state.maxBuyIn/100) / (state.maxBuyIn/200);
+      modifiedState.playerInfo = state.playerInfo.map(player => {
+        // console.log(player);
+        if(player.smallBlind === true) {
+          player.stackSize -= (state.maxBuyIn/200);
+          return player;
+        }
+        else if (player.bigBlind === true) {
+          player.stackSize -= (state.maxBuyIn/100);
+          return player;
+        }
+      });
+
+      // return Object.assign({}, state, {
+      //   ...state,
+        // playerInfo: state.playerInfo.map(player => {
+        //   console.log(player);
+        //   if(player.smallBlind === true) {
+        //     player.stackSize -= (state.maxBuyIn/200);
+        //     return player;
+        //   }
+        //   else if (player.bigBlind === true) {
+        //     player.stackSize -= (state.maxBuyIn/100);
+        //     return player;
+        //   }
+        // }),
+      //   potSize: (state.maxBuyIn/200) + (state.maxBuyIn/100)
+      // })
     }
     else if (action.type === actions.NEXT_HAND) {
       let handIndex = state.handIndex;
@@ -129,28 +144,31 @@
           }
         }
         console.log(inHandCount);
-        if(state.headsUp === true) {
+        if(inHandCount === 2) {
           console.log('heads up fold working');
-          // use promise to increment toPlay
-          return Object.assign({}, state, {
-            ...state,
-            playerInfo: state.playerInfo.map(player => {
-              if(player.playerTurn === true) {
-                player.playerTurn = false;
-                player.inHand = false;
-                inHandCount--;
-                return player;
-              }
-              else if (inHandCount === 1) {
-                if(player.inHand === true) {
-                  player.stackSize += state.potSize;
-                  handIndex++;
-                  return player;
-                }
-              }
-            }),
-            handIndex
+          modifiedState.playerInfo = state.playerInfo.map(player => {
+
           });
+          // use promise to increment toPlay
+          // return Object.assign({}, state, {
+          //   ...state,
+          //   playerInfo: state.playerInfo.map(player => {
+          //     if(player.playerTurn === true) {
+          //       player.playerTurn = false;
+          //       player.inHand = false;
+          //       inHandCount--;
+          //       return player;
+          //     }
+          //     else if (inHandCount === 1) {
+          //       if(player.inHand === true) {
+          //         player.stackSize += state.potSize;
+          //         handIndex++;
+          //         return player;
+          //       }
+          //     }
+          //   }),
+          //   handIndex
+          // });
 
         }
 
@@ -255,5 +273,5 @@
       //     // ... do something to generate new state
       //     // return newState;
       // }
-      return state;
+      return modifiedState;
   };
