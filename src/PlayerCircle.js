@@ -1,7 +1,22 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
+import {nextHand, setWinner, setBlinds} from './actions';
 
 export class PlayerCircle extends Component {
+  // componentDidUpdate() {
+  //   console.log('component updation');
+  //   let playerInfo = this.props.playerInfo;
+  //   if(this.props.inHand.length === 1) {
+  //     this.props.dispatch(setWinner());
+  //     //heads up logic
+  //     if(this.props.headsUp) {
+  //
+  //       this.props.dispatch(nextHand());
+  //       this.props.dispatch(setBlinds());
+  //
+  //     }
+  //   }
+  // }
   render() {
     // console.log(this.props.stackSizes);
     return (
@@ -29,7 +44,10 @@ PlayerCircle.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-  playerInfo: state.playerInfo
+  playerInfo: state.playerInfo,
+  inHand: state.inHand,
+  headsUp: state.headsUp,
+
 });
 
 export default connect(mapStateToProps)(PlayerCircle);

@@ -9,10 +9,22 @@ export const beginHand = playerInfo => ({
   type: BEGIN_HAND,
   playerInfo
 });
+
+export const SET_WINNER = 'SET_WINNER';
+export const setWinner = () => ({
+  type: SET_WINNER
+});
+
 export const NEXT_HAND = 'NEXT_HAND';
 export const nextHand = () => ({
   type: NEXT_HAND
 });
+
+export const SET_BLINDS = 'SET_BLINDS';
+export const setBlinds = () => ({
+  type: SET_BLINDS
+});
+
 
 export const CHECK = 'CHECK';
 export const check = playerIndex => ({
@@ -34,10 +46,9 @@ export const fold = playerIndex => ({
 });
 
 export const RAISE = 'RAISE';
-export const raise = (amount, playerIndex) => ({
+export const raise = (amount) => ({
   type: RAISE,
-  amount,
-  playerIndex
+  amount
 });
 
 export const DECREASE_STACK_SIZE = 'DECREASE_STACK_SIZE';

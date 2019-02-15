@@ -9,13 +9,9 @@
       // mode: 'Small Blind',
       raised: false,
       headsUp: true,
+      inHand: [],
       streets: ['Preflop', 'Flop', 'Turn', 'River'],
       street: 'Preflop',
-      // currentHand: [
-      //   {
-      //
-      //   }
-      // ],
       playerInfo: [
         {
           id: 1,
@@ -52,7 +48,12 @@
     let modifiedState = Object.assign({}, state, {});
     if (action.type === actions.BEGIN_GAME) {
       console.log('working');
+      state.playerInfo.forEach(player => {
 
+          modifiedState.inHand.push({id: player.id});
+
+      })
+      console.log('inhandpushtest', modifiedState.inHand);
       modifiedState.potSize += (state.maxBuyIn/100) + (state.maxBuyIn/200);
       modifiedState.playerInfo = state.playerInfo.map(player => {
         // console.log(player);
@@ -82,62 +83,117 @@
       //   potSize: (state.maxBuyIn/200) + (state.maxBuyIn/100)
       // })
     }
-      else if(action.type === actions.BEGIN_HAND) {
+      else if(action.type === actions.NEXT_HAND) {
         modifiedState.handIndex++;
         console.log('Begin hand working');
-        console.log('begin hand state', action.playerInfo);
-        modifiedState.playerInfo = action.playerInfo;
+        // console.log('begin hand state', action.playerInfo);
+        // modifiedState.playerInfo = action.playerInfo;
+      }
+      else if (action.type === actions.SET_WINNER) {
+        console.log('setting winner');
+        modifiedState.playerInfo = state.playerInfo.map(player => {
+          if(player.id === state.inHand[0].id) {
+            player.stackSize += state.potSize;
+          }
+          else {
+            modifiedState.inHand.push({id: player.id})
+          }
+          return player;
+        })
+      }
+      else if (action.type === actions.SET_BLINDS) {
+        // console.log('setting blinds');
+        // heads up logic
+        // if (state.headsUp) {
+        //   modifiedState.playerInfo = state.playerInfo.map(player => {
+        //     console.log(player);
+        //   })
+        // }
+        if (state.headsUp) {
+          console.log(modifiedState.playerInfo);
+          console.log(state.playerInfo);
+          modifiedState.playerInfo = state.playerInfo.map(player => {
+            if (player.smallBlind) {
+              player.smallBlind = false;
+              player.bigBlind = true;
+            } else if (player.bigBlind) {
+              player.smallBlind = true;
+              player.playerTurn = true;
+              player.bigBlind = false;
+            }
+            return player;
+          })
+        }
+
       }
       else if (action.type === actions.CHECK) {
         // can't check when small blind or dealer preflop heads up.  can only complete
         if (state.headsUp === true && state.raised === false && state.position === 'Dealer' ) {
           console.log('Game is broken');
         } else {
-          let newIndex = action.playerIndex + 1;
 
-          return Object.assign({}, state, {
-            // playerInfo[action.playerIndex].playerTurn: false,
-            // playerInfo[newIndex].playerTurn: true
-
-            playerInfo: state.playerInfo.map(player => {
-              console.log(player);
-              if(player.playerIndex === action.playerIndex) {
-                player.playerTurn = false;
-              }
-              else if (player.playerIndex === newIndex) {
-                player.playerTurn = true;
-              }
-              // console.log(player);
-              return player;
-            }),
-            position: state.positions[newIndex]
-          });
         }
 
      }
       else if (action.type === actions.CALL) {
-        if (state.headsUp === true && state.raised === false && state.position === 'Dealer' ) {
-          let newIndex = action.playerIndex + 1;
+        // small blind calls heads up
 
-            return Object.assign({}, state, {
-
-              playerInfo: state.playerInfo.map(player => {
-                console.log(player);
-                if(player.playerIndex === action.playerIndex) {
-                  player.playerTurn = false;
-                  player.stackSize = player.stackSize - (state.maxBuyIn/200);
-                }
-                else if (player.playerIndex === newIndex) {
-                  player.playerTurn = true;
-                }
-                return player;
-              }),
-              position: state.positions[newIndex]
-            });
+        let playerInfo = state.playerInfo;
+        if (state.headsUp && !state.raised) {
+          modifiedState.playerInfo = state.playerInfo.map(player => {
+            if(player.playerTurn && player.smallBlind) {
+              player.playerTurn = false;
+              player.stackSize -= (state.maxBuyIn/200);
+              modifiedState.potSize += (state.maxBuyIn/200);
+            }
+            else if (!player.playerTurn) {
+              player.playerTurn = true;
+            }
+            return player;
+          })
         }
+        console.log(modifiedState);
       }
       else if (action.type === actions.FOLD) {
-        console.log('fold working');
+        state.playerInfo.forEach(player => {
+          if(!player.playerTurn) {
+            console.log(player.id);
+            modifiedState.inHand = state.inHand.filter(item => player.id === item.id);
+          }
+        });
+
+        modifiedState.playerInfo = state.playerInfo.map(player => {
+          if (player.playerTurn) {
+            player.playerTurn = false;
+          }
+          return player;
+        })
+
+        if(modifiedState.inHand.length === 1) {
+          modifiedState.handIndex++;
+          // heads up logic
+          // small blind folds heads up preflop
+          if(state.headsUp) {
+            modifiedState.playerInfo = state.playerInfo.map(player => {
+              if(player.id === modifiedState.inHand[0].id) {
+                player.stackSize += state.potSize;
+              }
+              if(player.smallBlind) {
+                player.smallBlind = false;
+                player.bigBlind = true;
+                player.stackSize -= state.maxBuyIn/100;
+              }
+              else if (player.bigBlind) {
+                player.smallBlind = true;
+                player.playerTurn = true;
+                player.bigBlind = false;
+                player.stackSize -= state.maxBuyIn/200;
+              }
+              return player;
+            });
+          }
+          alert('Next hand.  Blinds Placed')
+        }
         // let inHandCount = 0;
         //
         // for (var i = 0; i < state.playerInfo.length; i++) {
@@ -170,30 +226,37 @@
       else if (action.type === actions.RAISE) {
           // console.log('index', action.playerIndex);
           // console.log('amount', action.amount);
+          console.log(action.amount);
           if(action.amount < (state.toPlay * 2)) {
-            console.log("Must raise at least twice the big blind or twice the" +
-            "bet or raise.");
+            alert("Must raise at least twice the big blind or twice the" +
+            " bet or raise.");
           }
-          if (state.headsUp === true && state.raised === false && state.position === 'Dealer' ) {
-            let newIndex = action.playerIndex + 1;
-
-              return Object.assign({}, state, {
-
-                playerInfo: state.playerInfo.map(player => {
-                  console.log(player);
-                  if(player.playerIndex === action.playerIndex) {
-                    state.toPlay = action.amount;
-                    player.stackSize = player.stackSize - action.amount;
-                    player.playerTurn = false;
+          if(action.amount >= (state.toPlay * 2)) {
+            //raise from small blind heads up
+            if (state.headsUp === true && state.raised === false) {
+              for(var i = 0; i<state.playerInfo.length; i++) {
+                if(state.playerInfo[i].smallBlind && state.playerInfo[i].playerTurn) {
+                  if (state.playerInfo[i].stackSize - (action.amount - state.maxBuyIn/200) >= 0) {
+                    modifiedState.toPlay = action.amount;
+                    modifiedState.potSize += (action.amount - state.maxBuyIn/200);
+                    modifiedState.playerInfo = state.playerInfo.map(player => {
+                      if(player.playerTurn && player.smallBlind) {
+                        player.playerTurn = false;
+                        player.stackSize -= (action.amount - state.maxBuyIn/200);
+                      } else if(!player.playerTurn) {
+                        player.playerTurn = true;
+                      }
+                      return player;
+                    })
+                  } else if (state.playerInfo[i].stackSize -(action.amount - state.maxBuyIn/200) < 0) {
+                    alert('Not enough chips.')
                   }
-                  else if (player.playerIndex === newIndex) {
-                    player.playerTurn = true;
-                  }
-                  return player;
-                }),
-                position: state.positions[newIndex]
-              });
+
+                }
+              }
+            }
           }
+
       }
       // else if (action.type === actions.BET) {
       //     // ... do something to generate new state

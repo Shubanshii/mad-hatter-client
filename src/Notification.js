@@ -20,10 +20,16 @@ export class Notification extends Component {
   //   }
   //
   // }
+  // componentDidUpdate() {
+  //   if(this.props.inHand.length === 1) {
+  //
+  //   }
+  // }
 
   render() {
 
     let playerInfo = this.props.playerInfo;
+    let playerTurn;
     let smallBlind;
     let bigBlind;
     for(var i = 0; i< playerInfo.length; i++) {
@@ -32,6 +38,10 @@ export class Notification extends Component {
       }
       else if(playerInfo[i].bigBlind === true) {
         bigBlind = playerInfo[i].name;
+      }
+
+      if(playerInfo[i].playerTurn) {
+        playerTurn = playerInfo[i].name;
       }
 
     }
@@ -43,7 +53,8 @@ export class Notification extends Component {
         <h3>Hand: {this.props.handIndex}</h3>
         <h3>Street: {this.props.street}</h3>
         {/*<h3>Turn: {player.name}</h3>*/}
-        <h3>Decision: </h3>
+        {/*<h3>Decision: </h3>*/}
+        <h3>Turn: {playerTurn}</h3>
         <h3>Small Blind: {smallBlind}</h3>
         <h3>Big Blind: {bigBlind}</h3>
       </div>
@@ -59,7 +70,8 @@ const mapStateToProps = state => ({
   street: state.street,
   handIndex: state.handIndex,
   playerInfo: state.playerInfo,
-  handOver: state.handOver
+  handOver: state.handOver,
+  inHand: state.inHand
 });
 
 export default connect(mapStateToProps)(Notification);
