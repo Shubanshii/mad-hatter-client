@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import {beginHand} from './actions';
+//import {beginHand} from './actions';
 
 export class Notification extends Component {
   // componentDidMount() {

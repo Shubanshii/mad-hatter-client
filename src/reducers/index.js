@@ -46,6 +46,11 @@
   // only for heads up dealer preflop right now
   export const hatterReducer = (state=initialState, action) => {
     let modifiedState = Object.assign({}, state, {});
+    function statePlayerLoop(callback) {
+      for (var i = 0; i < state.playerInfo.length; i++) {
+        callback;
+      }
+    }
     if (action.type === actions.BEGIN_GAME) {
       console.log('working');
       state.playerInfo.forEach(player => {
@@ -59,12 +64,13 @@
         // console.log(player);
         if(player.smallBlind === true) {
           player.stackSize -= (state.maxBuyIn/200);
-          return player;
+          // return player
         }
         else if (player.bigBlind === true) {
           player.stackSize -= (state.maxBuyIn/100);
-          return player;
+          // return player;
         }
+        return player;
       });
 
       // return Object.assign({}, state, {
@@ -128,17 +134,29 @@
       }
       else if (action.type === actions.CHECK) {
         // can't check when small blind or dealer preflop heads up.  can only complete
-        if (state.headsUp === true && state.raised === false && state.position === 'Dealer' ) {
-          console.log('Game is broken');
-        } else {
-
+        if (state.headsUp === true && state.raised === false) {
+          for (var i = 0; i<state.playerInfo.length; i++) {
+            if(state.playerInfo[i].smallBlind && state.playerInfo[i].playerTurn) {
+              alert("Can't check here");
+            } //else {
+              // preflop heads up big blind checks
+            //  console.log('checking');
+             // if (state.street === 'Preflop' && state.toPlay = state.maxBuyIn/100) {
+             //    for(var i = 0 ; i < state.playerInfo.length; i++) {
+             //      if (state.playerInfo[i].bigBlind) {
+             //        modifiedState.street = 'Flop';
+             //      }
+             //    }
+             //  }
+            //}
+          }
         }
 
      }
       else if (action.type === actions.CALL) {
         // small blind calls heads up
 
-        let playerInfo = state.playerInfo;
+        //let playerInfo = state.playerInfo;
         if (state.headsUp && !state.raised) {
           modifiedState.playerInfo = state.playerInfo.map(player => {
             if(player.playerTurn && player.smallBlind) {

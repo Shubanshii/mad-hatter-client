@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import {call, fold, setWinner, checkForWinner, raise} from './actions';
+import {call, fold, raise, check} from './actions';
 
 
 export class PlayerDecision extends Component {
@@ -73,6 +73,10 @@ export class PlayerDecision extends Component {
     this.props.dispatch(raise(value));
   }
 
+  check() {
+    this.props.dispatch(check());
+  }
+
   render() {
     // const playerCount = this.props.playerCount;
     // const player = this.props.playerInfo.find(player => player.playerTurn === true);
@@ -85,7 +89,7 @@ export class PlayerDecision extends Component {
         <form>
         {/*<h2>Player {this.props.playerTurn} act</h2>*/}
         <div className="form-section">
-          <button type="button" name="check">Check</button>
+          <button onClick={() => this.check()} type="button" name="check">Check</button>
           <button onClick={() => this.call()} type="button" name="call">Call</button>
           <button onClick={() => this.fold()} type="button" name="fold">Fold</button>
           {/*<div>

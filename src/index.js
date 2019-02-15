@@ -5,7 +5,7 @@ import {Provider} from 'react-redux';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import store from './store';
-import {check, call, fold, raise} from './actions';
+//import {check, call, fold, raise} from './actions';
 
 // console.log(store.getState());
 // store.dispatch(check(0));

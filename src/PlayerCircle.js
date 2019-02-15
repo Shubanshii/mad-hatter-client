@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import {nextHand, setWinner, setBlinds} from './actions';
+//import {nextHand, setWinner, setBlinds} from './actions';
 
 export class PlayerCircle extends Component {
   // componentDidUpdate() {

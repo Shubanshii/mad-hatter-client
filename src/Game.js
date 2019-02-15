@@ -3,7 +3,7 @@
   import PlayerDecision from './PlayerDecision';
   import Notification from './Notification';
   import {connect} from 'react-redux';
-  import {beginGame, fold} from './actions';
+  import {beginGame} from './actions';
 
   export class Game extends Component {
     componentDidMount() {
