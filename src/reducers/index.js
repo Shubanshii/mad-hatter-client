@@ -46,11 +46,7 @@
   // only for heads up dealer preflop right now
   export const hatterReducer = (state=initialState, action) => {
     let modifiedState = Object.assign({}, state, {});
-    function statePlayerLoop(callback) {
-      for (var i = 0; i < state.playerInfo.length; i++) {
-        callback;
-      }
-    }
+
     if (action.type === actions.BEGIN_GAME) {
       console.log('working');
       state.playerInfo.forEach(player => {
@@ -134,11 +130,20 @@
       }
       else if (action.type === actions.CHECK) {
         // can't check when small blind or dealer preflop heads up.  can only complete
-        if (state.headsUp === true && state.raised === false) {
+        if(state.raised) {
+          alert("Can't check here");
+        }
+        else if (state.headsUp === true && state.raised === false && state.street === "Preflop") {
           for (var i = 0; i<state.playerInfo.length; i++) {
             if(state.playerInfo[i].smallBlind && state.playerInfo[i].playerTurn) {
               alert("Can't check here");
-            } //else {
+            }
+            // Big Blind checks preflop
+            else if (state.playerInfo[i].bigBlind && state.playerInfo[i].playerTurn) {
+              // console.log('checking');
+              modifiedState.street = "Flop";
+            }
+             //else {
               // preflop heads up big blind checks
             //  console.log('checking');
              // if (state.street === 'Preflop' && state.toPlay = state.maxBuyIn/100) {
@@ -252,7 +257,7 @@
           if(action.amount >= (state.toPlay * 2)) {
             //raise from small blind heads up
             if (state.headsUp === true && state.raised === false) {
-              for(var i = 0; i<state.playerInfo.length; i++) {
+              for(i = 0; i<state.playerInfo.length; i++) {
                 if(state.playerInfo[i].smallBlind && state.playerInfo[i].playerTurn) {
                   if (state.playerInfo[i].stackSize - (action.amount - state.maxBuyIn/200) >= 0) {
                     modifiedState.toPlay = action.amount;
