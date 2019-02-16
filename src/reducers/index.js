@@ -198,41 +198,38 @@
                   }
                   return player;
                 })
-
-                if(modifiedState.inHand.length === 1) {
-                  modifiedState.handIndex++;
-                  // heads up logic
-                  // small blind folds heads up preflop
-
-                    modifiedState.playerInfo = state.playerInfo.map(player => {
-                      if(player.id === modifiedState.inHand[0].id) {
-                        player.stackSize += state.potSize;
-                      }
-                      if(player.smallBlind) {
-                        player.smallBlind = false;
-                        player.bigBlind = true;
-                        player.stackSize -= state.maxBuyIn/100;
-                      }
-                      else if (player.bigBlind) {
-                        player.smallBlind = true;
-                        player.playerTurn = true;
-                        player.bigBlind = false;
-                        player.stackSize -= state.maxBuyIn/200;
-                      }
-                      return player;
-                    });
-                    modifiedState.potSize = (state.maxBuyIn/100) + (state.maxBuyIn/200);
-
-                  alert('Next hand.  Blinds Placed')
-                  // testing revert
-                }
               }
               else if (!player.playerTurn && !player.bigBlind && !state.raised) {
                 alert("Can't fold");
 
               }
             });
+            if(modifiedState.inHand.length === 1) {
+              modifiedState.handIndex++;
+              // heads up logic
+              // small blind folds heads up preflop
 
+                modifiedState.playerInfo = state.playerInfo.map(player => {
+                  if(player.id === modifiedState.inHand[0].id) {
+                    player.stackSize += state.potSize;
+                  }
+                  if(player.smallBlind) {
+                    player.smallBlind = false;
+                    player.bigBlind = true;
+                    player.stackSize -= state.maxBuyIn/100;
+                  }
+                  else if (player.bigBlind) {
+                    player.smallBlind = true;
+                    player.playerTurn = true;
+                    player.bigBlind = false;
+                    player.stackSize -= state.maxBuyIn/200;
+                  }
+                  return player;
+                });
+                modifiedState.potSize = (state.maxBuyIn/100) + (state.maxBuyIn/200);
+
+              alert('Next hand.  Blinds Placed')
+            }
           }
         }
 
