@@ -181,48 +181,52 @@
         if(!state.raised && state.street !== "Preflop" ) {
           alert("Can't fold unless facing a raise or a bet.");
         }
-        else {
+        else if (state.street === "Preflop"){
           state.playerInfo.forEach(player => {
 
-            if(!player.playerTurn) {
+            if(!player.playerTurn && !player.smallBlind) {
 
               console.log(player.id);
               modifiedState.inHand = state.inHand.filter(item => player.id === item.id);
+              modifiedState.playerInfo = state.playerInfo.map(player => {
+                if (player.playerTurn) {
+                  player.playerTurn = false;
+                }
+                return player;
+              })
+
+              if(modifiedState.inHand.length === 1) {
+                modifiedState.handIndex++;
+                // heads up logic
+                // small blind folds heads up preflop
+                if(state.headsUp) {
+                  modifiedState.playerInfo = state.playerInfo.map(player => {
+                    if(player.id === modifiedState.inHand[0].id) {
+                      player.stackSize += state.potSize;
+                    }
+                    if(player.smallBlind) {
+                      player.smallBlind = false;
+                      player.bigBlind = true;
+                      player.stackSize -= state.maxBuyIn/100;
+                    }
+                    else if (player.bigBlind) {
+                      player.smallBlind = true;
+                      player.playerTurn = true;
+                      player.bigBlind = false;
+                      player.stackSize -= state.maxBuyIn/200;
+                    }
+                    return player;
+                  });
+                }
+                alert('Next hand.  Blinds Placed')
+              }
+            }
+            else if (!player.playerTurn && !player.bigBlind) {
+              alert("Can't fold");
+
             }
           });
 
-          modifiedState.playerInfo = state.playerInfo.map(player => {
-            if (player.playerTurn) {
-              player.playerTurn = false;
-            }
-            return player;
-          })
-
-          if(modifiedState.inHand.length === 1) {
-            modifiedState.handIndex++;
-            // heads up logic
-            // small blind folds heads up preflop
-            if(state.headsUp) {
-              modifiedState.playerInfo = state.playerInfo.map(player => {
-                if(player.id === modifiedState.inHand[0].id) {
-                  player.stackSize += state.potSize;
-                }
-                if(player.smallBlind) {
-                  player.smallBlind = false;
-                  player.bigBlind = true;
-                  player.stackSize -= state.maxBuyIn/100;
-                }
-                else if (player.bigBlind) {
-                  player.smallBlind = true;
-                  player.playerTurn = true;
-                  player.bigBlind = false;
-                  player.stackSize -= state.maxBuyIn/200;
-                }
-                return player;
-              });
-            }
-            alert('Next hand.  Blinds Placed')
-          }
         }
 
 
