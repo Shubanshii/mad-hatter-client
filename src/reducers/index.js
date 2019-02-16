@@ -178,73 +178,54 @@
         console.log(modifiedState);
       }
       else if (action.type === actions.FOLD) {
-        state.playerInfo.forEach(player => {
-          if(!player.playerTurn) {
-            console.log(player.id);
-            modifiedState.inHand = state.inHand.filter(item => player.id === item.id);
-          }
-        });
-
-        modifiedState.playerInfo = state.playerInfo.map(player => {
-          if (player.playerTurn) {
-            player.playerTurn = false;
-          }
-          return player;
-        })
-
-        if(modifiedState.inHand.length === 1) {
-          modifiedState.handIndex++;
-          // heads up logic
-          // small blind folds heads up preflop
-          if(state.headsUp) {
-            modifiedState.playerInfo = state.playerInfo.map(player => {
-              if(player.id === modifiedState.inHand[0].id) {
-                player.stackSize += state.potSize;
-              }
-              if(player.smallBlind) {
-                player.smallBlind = false;
-                player.bigBlind = true;
-                player.stackSize -= state.maxBuyIn/100;
-              }
-              else if (player.bigBlind) {
-                player.smallBlind = true;
-                player.playerTurn = true;
-                player.bigBlind = false;
-                player.stackSize -= state.maxBuyIn/200;
-              }
-              return player;
-            });
-          }
-          alert('Next hand.  Blinds Placed')
+        if(!state.raised && state.street !== "Preflop" ) {
+          alert("Can't fold unless facing a raise or a bet.");
         }
-        // let inHandCount = 0;
-        //
-        // for (var i = 0; i < state.playerInfo.length; i++) {
-        //   if(state.playerInfo[i].inHand === true) {
-        //     inHandCount++;
-        //   }
-        // }
-        // console.log(inHandCount);
-        // if(inHandCount === 2) {
-        //   console.log('heads up fold working');
-        //   modifiedState.playerInfo = state.playerInfo.map(player => {
-        //     if(player.playerTurn === true) {
-        //       player.playerTurn = false;
-        //       player.inHand = false;
-        //       inHandCount--;
-        //     }
-        //     else if(player.playerTurn === false && player.inHand === true && inHandCount === 1) {
-        //       player.stackSize += state.potSize;
-        //     }
-        //     return player;
-        //   });
-        //
-        //   if(inHandCount === 1) {
-        //     modifiedState.handOver = true;
-        //
-        //
-        //   }
-        // }
+        else {
+          state.playerInfo.forEach(player => {
+
+            if(!player.playerTurn) {
+
+              console.log(player.id);
+              modifiedState.inHand = state.inHand.filter(item => player.id === item.id);
+            }
+          });
+
+          modifiedState.playerInfo = state.playerInfo.map(player => {
+            if (player.playerTurn) {
+              player.playerTurn = false;
+            }
+            return player;
+          })
+
+          if(modifiedState.inHand.length === 1) {
+            modifiedState.handIndex++;
+            // heads up logic
+            // small blind folds heads up preflop
+            if(state.headsUp) {
+              modifiedState.playerInfo = state.playerInfo.map(player => {
+                if(player.id === modifiedState.inHand[0].id) {
+                  player.stackSize += state.potSize;
+                }
+                if(player.smallBlind) {
+                  player.smallBlind = false;
+                  player.bigBlind = true;
+                  player.stackSize -= state.maxBuyIn/100;
+                }
+                else if (player.bigBlind) {
+                  player.smallBlind = true;
+                  player.playerTurn = true;
+                  player.bigBlind = false;
+                  player.stackSize -= state.maxBuyIn/200;
+                }
+                return player;
+              });
+            }
+            alert('Next hand.  Blinds Placed')
+          }
+        }
+
+
       }
       else if (action.type === actions.RAISE) {
           // console.log('index', action.playerIndex);
