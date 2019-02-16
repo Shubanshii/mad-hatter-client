@@ -184,53 +184,57 @@
         if(!state.raised && state.street !== "Preflop" ) {
           alert("Can't fold unless facing a raise or a bet.");
         }
-        else if (state.street === "Preflop"){
-          state.playerInfo.forEach(player => {
+        else if (state.headsUp) {
+          if (state.street === "Preflop"){
+            state.playerInfo.forEach(player => {
 
-            if(!player.playerTurn && !player.smallBlind) {
+              if(!player.playerTurn && (player.bigBlind && !state.raised) || (player.smallBlind && state.raised) ) {
 
-              console.log(player.id);
-              modifiedState.inHand = state.inHand.filter(item => player.id === item.id);
-              modifiedState.playerInfo = state.playerInfo.map(player => {
-                if (player.playerTurn) {
-                  player.playerTurn = false;
+                console.log(player.id);
+                modifiedState.inHand = state.inHand.filter(item => player.id === item.id);
+                modifiedState.playerInfo = state.playerInfo.map(player => {
+                  if (player.playerTurn) {
+                    player.playerTurn = false;
+                  }
+                  return player;
+                })
+
+                if(modifiedState.inHand.length === 1) {
+                  modifiedState.handIndex++;
+                  // heads up logic
+                  // small blind folds heads up preflop
+
+                    modifiedState.playerInfo = state.playerInfo.map(player => {
+                      if(player.id === modifiedState.inHand[0].id) {
+                        player.stackSize += state.potSize;
+                      }
+                      if(player.smallBlind) {
+                        player.smallBlind = false;
+                        player.bigBlind = true;
+                        player.stackSize -= state.maxBuyIn/100;
+                      }
+                      else if (player.bigBlind) {
+                        player.smallBlind = true;
+                        player.playerTurn = true;
+                        player.bigBlind = false;
+                        player.stackSize -= state.maxBuyIn/200;
+                      }
+                      return player;
+                    });
+                    modifiedState.potSize = (state.maxBuyIn/100) + (state.maxBuyIn/200);
+
+                  alert('Next hand.  Blinds Placed')
                 }
-                return player;
-              })
-
-              if(modifiedState.inHand.length === 1) {
-                modifiedState.handIndex++;
-                // heads up logic
-                // small blind folds heads up preflop
-                if(state.headsUp) {
-                  modifiedState.playerInfo = state.playerInfo.map(player => {
-                    if(player.id === modifiedState.inHand[0].id) {
-                      player.stackSize += state.potSize;
-                    }
-                    if(player.smallBlind) {
-                      player.smallBlind = false;
-                      player.bigBlind = true;
-                      player.stackSize -= state.maxBuyIn/100;
-                    }
-                    else if (player.bigBlind) {
-                      player.smallBlind = true;
-                      player.playerTurn = true;
-                      player.bigBlind = false;
-                      player.stackSize -= state.maxBuyIn/200;
-                    }
-                    return player;
-                  });
-                }
-                alert('Next hand.  Blinds Placed')
               }
-            }
-            else if (!player.playerTurn && !player.bigBlind) {
-              alert("Can't fold");
+              else if (!player.playerTurn && !player.bigBlind && !state.raised) {
+                alert("Can't fold");
 
-            }
-          });
+              }
+            });
 
+          }
         }
+
 
 
       }
@@ -244,6 +248,7 @@
           }
           if(action.amount >= (state.toPlay * 2)) {
             //raise from small blind heads up
+            modifiedState.raised = true;
             if (state.headsUp === true && state.raised === false) {
               for(i = 0; i<state.playerInfo.length; i++) {
                 if(state.playerInfo[i].smallBlind && state.playerInfo[i].playerTurn) {
