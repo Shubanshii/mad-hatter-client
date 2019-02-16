@@ -224,6 +224,7 @@
                     modifiedState.potSize = (state.maxBuyIn/100) + (state.maxBuyIn/200);
 
                   alert('Next hand.  Blinds Placed')
+                  // testing revert
                 }
               }
               else if (!player.playerTurn && !player.bigBlind && !state.raised) {
