@@ -162,14 +162,17 @@
         // small blind calls heads up
 
         //let playerInfo = state.playerInfo;
-        if (state.headsUp && !state.raised) {
+        if (state.headsUp && !state.raised && state.street === 'Preflop') {
           modifiedState.playerInfo = state.playerInfo.map(player => {
             if(player.playerTurn && player.smallBlind) {
               player.playerTurn = false;
               player.stackSize -= (state.maxBuyIn/200);
               modifiedState.potSize += (state.maxBuyIn/200);
             }
-            else if (!player.playerTurn) {
+            else if(player.playerTurn && player.bigBlind) {
+              alert("Can't call")
+            }
+            else if (!player.playerTurn && player.bigBlind) {
               player.playerTurn = true;
             }
             return player;
