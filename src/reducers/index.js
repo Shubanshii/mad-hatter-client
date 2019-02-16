@@ -196,7 +196,7 @@
           if (state.street === "Preflop"){
             state.playerInfo.forEach(player => {
 
-              if(!player.playerTurn && (player.bigBlind && !state.raised) || (player.smallBlind && state.raised) ) {
+              if((!player.playerTurn && player.bigBlind && !state.raised) || (!player.playerTurn && player.smallBlind && state.raised) ) {
 
                 console.log(player.id);
                 modifiedState.inHand = state.inHand.filter(item => player.id === item.id);
