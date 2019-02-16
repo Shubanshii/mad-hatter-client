@@ -180,7 +180,16 @@
                 return player;
               })
             } else {
+              // big blind calls raise heads up
               console.log('statetoplay', state.toPlay);
+              modifiedState.playerInfo = state.playerInfo.map(player => {
+                if (player.playerTurn) {
+                  player.stackSize -= (state.toPlay - (state.maxBuyIn/100));
+                }
+                return player;
+              })
+              modifiedState.potSize += (state.toPlay - (state.maxBuyIn/100));
+              modifiedState.street = "Flop";
             }
           }
 
