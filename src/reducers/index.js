@@ -273,9 +273,10 @@
                       if(player.playerTurn && player.smallBlind) {
                         player.playerTurn = false;
                         player.stackSize -= (action.amount - state.maxBuyIn/200);
-                      } else if(!player.playerTurn) {
-                        player.playerTurn = true;
                       }
+                      // else if(!player.playerTurn) {
+                      //   player.playerTurn = true;
+                      // }
                       modifiedState.raised = true;
                       return player;
                     })
@@ -291,9 +292,10 @@
                       if(player.playerTurn && player.bigBlind) {
                         player.playerTurn = false;
                         player.stackSize -= (action.amount - state.maxBuyIn/100);
-                      } else if(!player.playerTurn) {
-                        player.playerTurn = true;
                       }
+                      // else if(!player.playerTurn) {
+                      //   player.playerTurn = true;
+                      // }
                       modifiedState.raised = true;
                       return player;
                     })
