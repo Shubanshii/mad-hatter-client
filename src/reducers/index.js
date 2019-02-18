@@ -274,6 +274,11 @@
                         modifiedState.potSize += (action.amount - state.maxBuyIn/200);
                       }
 
+                    } else if(state.playerInfo[i].playerTurn && state.playerInfo[i].bigBlind) {
+                      if(state.playerInfo[i].stackSize - (action.amount - state.maxBuyIn/100) >= 0) {
+                        modifiedState.toPlay = action.amount
+                        modifiedState.potSize += (action.amount - state.maxBuyIn/100);
+                      }
                     }
                   }
                 }
