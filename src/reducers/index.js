@@ -46,7 +46,8 @@
   // only for heads up dealer preflop right now
   export const hatterReducer = (state=initialState, action) => {
     let modifiedState = Object.assign({}, state, {});
-
+    let mustDeclareWinner = false;
+    let winner;
     if (action.type === actions.BEGIN_GAME) {
       console.log('working');
       state.playerInfo.forEach(player => {
@@ -190,6 +191,16 @@
               })
               modifiedState.potSize += (state.toPlay - (state.maxBuyIn/100));
               modifiedState.street = "Flop";
+              modifiedState.playerInfo.forEach(player => {
+                if(player.stackSize === 0) {
+                  mustDeclareWinner = true;
+                }
+                console.log('calleachplayer', player);
+              })
+              if(mustDeclareWinner) {
+                let winner = prompt('Enter number of winner');
+                console.log(winner);
+              }
             }
           }
 
