@@ -107,6 +107,7 @@ export class PlayerDecision extends Component {
         <form onSubmit={e => this.raise(e)}>
           <input
             type="number"
+            step="0.01"
             name="raiseAmount"
             id="raiseAmount"
             className="text"
