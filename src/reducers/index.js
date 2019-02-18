@@ -304,7 +304,7 @@
                         player.stackSize -= (action.amount - state.maxBuyIn/100);
                       }
                     }
-                    else if (!player.playerTurn) {
+                    else if (!player.playerTurn && modifiedState.raised) {
                       player.playerTurn = true;
                     }
                     return player;
