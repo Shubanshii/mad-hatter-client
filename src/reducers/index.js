@@ -272,12 +272,16 @@
                       if(state.playerInfo[i].stackSize - (action.amount - state.maxBuyIn/200) >= 0) {
                         modifiedState.toPlay = action.amount
                         modifiedState.potSize += (action.amount - state.maxBuyIn/200);
+                      } else {
+                        alert('Not enough funds');
                       }
 
                     } else if(state.playerInfo[i].playerTurn && state.playerInfo[i].bigBlind) {
                       if(state.playerInfo[i].stackSize - (action.amount - state.maxBuyIn/100) >= 0) {
                         modifiedState.toPlay = action.amount
                         modifiedState.potSize += (action.amount - state.maxBuyIn/100);
+                      } else {
+                        alert('Not enough funds');
                       }
                     }
                   }
