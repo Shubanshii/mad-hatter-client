@@ -48,6 +48,28 @@
     let modifiedState = Object.assign({}, state, {});
     let mustDeclareWinner = false;
     let winner;
+    function declareWinner() {
+      winner = prompt('Enter number of winner');
+      winner = parseInt(winner, 10);
+      let foundWinner = state.inHand.find(player => {
+        return player.id === winner;
+      });
+
+      console.log(foundWinner);
+      if(foundWinner === undefined) {
+        alert('Player not in hand');
+        declareWinner()
+      }
+    }
+    function rewardWinner(winner) {
+      console.log('rewardwinner', winner);
+      modifiedState.playerInfo = state.playerInfo.map(player => {
+        if (player.id === winner) {
+          player.stackSize += modifiedState.potSize;
+        }
+        return player;
+      })
+    }
     if (action.type === actions.BEGIN_GAME) {
       console.log('working');
       state.playerInfo.forEach(player => {
@@ -198,8 +220,38 @@
                 console.log('calleachplayer', player);
               })
               if(mustDeclareWinner) {
-                let winner = prompt('Enter number of winner');
-                console.log(winner);
+                // function declareWinner() {
+                //   winner = prompt('Enter number of winner');
+                //   winner = parseInt(winner, 10);
+                // }
+                // function rewardWinner(winner) {
+                //   console.log('rewardwinner', winner);
+                //   modifiedState.playerInfo = state.playerInfo.map(player => {
+                //     if (player.id === winner) {
+                //       player.stackSize += modifiedState.potSize;
+                //     }
+                //     return player;
+                //   })
+                // }
+                declareWinner();
+                // let foundWinner = state.inHand.find(player => {
+                //   return player.id === winner;
+                // });
+                //
+                // console.log(foundWinner);
+                // if(foundWinner === undefined) {
+                //   alert('Player not in hand');
+                //   declareWinner()
+                // }
+                for(i = 0; i<state.inHand.length; i++) {
+
+                  if (state.inHand[i].id === winner) {
+                    rewardWinner(winner);
+                  }
+                }
+                // if(winner > state.playerInfo.length) {
+                //
+                // }
               }
             }
           }
