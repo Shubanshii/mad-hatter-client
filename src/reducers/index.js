@@ -254,58 +254,99 @@
 
       }
       else if (action.type === actions.RAISE) {
-          // console.log('index', action.playerIndex);
-          // console.log('amount', action.amount);
-          console.log(action.amount);
+          //                modifiedState.toPlay = action.amount; need to plug this in somewhere
           if(action.amount < (state.toPlay * 2)) {
             alert("Must raise at least twice the big blind or twice the" +
             " bet or raise.");
           }
           if(action.amount >= (state.toPlay * 2)) {
+            console.log('raising');
             //raise from small blind heads up
-            if (state.headsUp === true && state.raised === false) {
-              for(i = 0; i<state.playerInfo.length; i++) {
-                if(state.playerInfo[i].smallBlind && state.playerInfo[i].playerTurn) {
-                  if (state.playerInfo[i].stackSize - (action.amount - state.maxBuyIn/200) >= 0) {
-                    modifiedState.toPlay = action.amount;
-                    modifiedState.potSize += (action.amount - state.maxBuyIn/200);
-                    modifiedState.playerInfo = state.playerInfo.map(player => {
-                      if(player.playerTurn && player.smallBlind) {
-                        player.playerTurn = false;
-                        player.stackSize -= (action.amount - state.maxBuyIn/200);
+            let pF = state.street === 'Preflop';
+            let unraised = !state.raised;
+            if(state.headsUp) {
+              for (i=0; i<state.playerInfo.length; i++) {
+                if(unraised) {
+                  if(pF) {
+                    if(state.playerInfo[i].playerTurn && state.playerInfo[i].smallBlind) {
+                      if(state.playerInfo[i].stackSize - (action.amount - state.maxBuyIn/200) >= 0) {
+                        modifiedState.toPlay = action.amount
+                        modifiedState.potSize += (action.amount - state.maxBuyIn/200);
                       }
-                      // else if(!player.playerTurn) {
-                      //   player.playerTurn = true;
-                      // }
-                      modifiedState.raised = true;
-                      return player;
-                    })
-                  } else if (state.playerInfo[i].stackSize -(action.amount - state.maxBuyIn/200) < 0) {
-                    alert('Not enough chips.')
-                  }
 
-                } else if(state.playerInfo[i].bigBlind && state.playerInfo[i].playerTurn) {
-                  if (state.playerInfo[i].stackSize - (action.amount - state.maxBuyIn/100) >= 0) {
-                    modifiedState.toPlay = action.amount;
-                    modifiedState.potSize += (action.amount - state.maxBuyIn/100);
-                    modifiedState.playerInfo = state.playerInfo.map(player => {
-                      if(player.playerTurn && player.bigBlind) {
-                        player.playerTurn = false;
-                        player.stackSize -= (action.amount - state.maxBuyIn/100);
-                      }
-                      // else if(!player.playerTurn) {
-                      //   player.playerTurn = true;
-                      // }
-                      modifiedState.raised = true;
-                      return player;
-                    })
-                  } else if (state.playerInfo[i].stackSize -(action.amount - state.maxBuyIn/100) < 0) {
-                    alert('Not enough chips.')
+                    }
                   }
-
                 }
               }
+              if(unraised) {
+                if(pF) {
+                  modifiedState.playerInfo = state.playerInfo.map(player => {
+                    if(player.playerTurn && player.smallBlind) {
+                      if(player.stackSize - (action.amount - state.maxBuyIn/200) >= 0) {
+                        player.playerTurn = false;
+                        modifiedState.raised = true;
+                        player.stackSize -= (action.amount - state.maxBuyIn/200);
+                      }
+                    }
+                    else if(player.playerTurn && player.bigBlind) {
+                      if(player.stackSize - (action.amount - state.maxBuyIn/100) >= 0) {
+                        player.playerTurn = false;
+                        modifiedState.raised = true;
+                        player.stackSize -= (action.amount - state.maxBuyIn/100);
+                      }
+                    }
+                    else if (!player.playerTurn) {
+                      player.playerTurn = true;
+                    }
+                    return player;
+                  })
+                }
+              }
+
             }
+            // if (state.headsUp === true && state.raised === false) {
+            //   for(i = 0; i<state.playerInfo.length; i++) {
+            //     if(state.playerInfo[i].smallBlind && state.playerInfo[i].playerTurn) {
+            //       if (state.playerInfo[i].stackSize - (action.amount - state.maxBuyIn/200) >= 0) {
+            //         modifiedState.toPlay = action.amount;
+            //
+            //         modifiedState.playerInfo = state.playerInfo.map(player => {
+            //           if(player.playerTurn && player.smallBlind) {
+            //             player.playerTurn = false;
+            //             player.stackSize -= (action.amount - state.maxBuyIn/200);
+            //           }
+            //           // else if(!player.playerTurn) {
+            //           //   player.playerTurn = true;
+            //           // }
+            //           modifiedState.raised = true;
+            //           return player;
+            //         })
+            //       } else if (state.playerInfo[i].stackSize -(action.amount - state.maxBuyIn/200) < 0) {
+            //         alert('Not enough chips.')
+            //       }
+            //
+            //     } else if(state.playerInfo[i].bigBlind && state.playerInfo[i].playerTurn) {
+            //       if (state.playerInfo[i].stackSize - (action.amount - state.maxBuyIn/100) >= 0) {
+            //         modifiedState.toPlay = action.amount;
+            //         modifiedState.potSize += (action.amount - state.maxBuyIn/100);
+            //         modifiedState.playerInfo = state.playerInfo.map(player => {
+            //           if(player.playerTurn && player.bigBlind) {
+            //             player.playerTurn = false;
+            //             player.stackSize -= (action.amount - state.maxBuyIn/100);
+            //           }
+            //           // else if(!player.playerTurn) {
+            //           //   player.playerTurn = true;
+            //           // }
+            //           modifiedState.raised = true;
+            //           return player;
+            //         })
+            //       } else if (state.playerInfo[i].stackSize -(action.amount - state.maxBuyIn/100) < 0) {
+            //         alert('Not enough chips.')
+            //       }
+            //
+            //     }
+            //   }
+            // }
           }
 
       }
