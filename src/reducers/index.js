@@ -46,14 +46,27 @@
   // only for heads up dealer preflop right now
   export const hatterReducer = (state=initialState, action) => {
     let modifiedState = Object.assign({}, state, {});
-    function handleBeginGame() {
-      console.log('working');
-        state.playerInfo.forEach(player => {
-            if(player.inHand) {
-              modifiedState.inHand.push({id: player.id});
-            }
+    let mustDeclareWinner = false;
+    let winner;
 
-        })
+    function addAllPlayersToHand() {
+      state.playerInfo.forEach(player => {
+          if(player.inHand) {
+            modifiedState.inHand.push({id: player.id});
+          }
+
+      })
+    }
+
+    function handleBeginGame() {
+      addAllPlayersToHand();
+      // console.log('working');
+      //   state.playerInfo.forEach(player => {
+      //       if(player.inHand) {
+      //         modifiedState.inHand.push({id: player.id});
+      //       }
+      //
+      //   })
       console.log('inhandpushtest', modifiedState.inHand);
       modifiedState.potSize += (state.maxBuyIn/100) + (state.maxBuyIn/200);
       modifiedState.playerInfo = state.playerInfo.map(player => {
@@ -70,6 +83,26 @@
       });
     }
 
+    function switchBlinds() {
+      modifiedState.playerInfo = modifiedState.playerInfo.map(player => {
+        //switch big and small blind and subtract blinds from stacks and add player to hand
+        if(player.smallBlind) {
+          player.smallBlind = false;
+          player.bigBlind = true;
+          player.inHand = true;
+          player.stackSize -= (state.maxBuyIn / 100);
+        }
+        else if (player.bigBlind) {
+          player.smallBlind = true;
+          player.playerTurn = true;
+          player.bigBlind = false;
+          player.inHand = true;
+          player.stackSize -= (state.maxBuyIn / 200);
+        }
+        return player;
+      })
+    }
+
     function handleRemoveFoldedPlayer(players) {
       console.log(players);
       modifiedState.inHand = [];
@@ -84,6 +117,7 @@
     function removeFoldedPlayer() {
       modifiedState.playerInfo = state.playerInfo.map(player => {
         if(player.playerTurn) {
+          player.playerTurn = false;
           player.inHand = false;
         }
         return player;
@@ -142,34 +176,35 @@
             modifiedState.handIndex++;
             // heads up logic
             // small blind folds heads up preflop
+            // set id of winner
+            winner = modifiedState.inHand[0].id
+            //pass id of winner to reward winner
+            rewardWinner(winner);
+            // this is heads up so blinds will be switched instead of rotated
+            switchBlinds();
+              // modifiedState.playerInfo = state.playerInfo.map(player => {
 
-              modifiedState.playerInfo = state.playerInfo.map(player => {
-                if(player.id === modifiedState.inHand[0].id) {
-                  player.stackSize += state.potSize;
-                }
-                if(player.smallBlind) {
-                  player.smallBlind = false;
-                  player.bigBlind = true;
-                  player.stackSize -= state.maxBuyIn/100;
-                }
-                else if (player.bigBlind) {
-                  player.smallBlind = true;
-                  player.playerTurn = true;
-                  player.bigBlind = false;
-                  player.stackSize -= state.maxBuyIn/200;
-                }
-                return player;
-              });
+              //   if(player.smallBlind) {
+              //     player.smallBlind = false;
+              //     player.bigBlind = true;
+              //     player.stackSize -= state.maxBuyIn/100;
+              //   }
+              //   else if (player.bigBlind) {
+              //     player.smallBlind = true;
+              //     player.playerTurn = true;
+              //     player.bigBlind = false;
+              //     player.stackSize -= state.maxBuyIn/200;
+              //   }
+              //   return player;
+              // });
               modifiedState.potSize = (state.maxBuyIn/100) + (state.maxBuyIn/200);
-
+              addAllPlayersToHand();
             alert('Next hand.  Blinds Placed')
           }
         }
       }
     }
 
-    let mustDeclareWinner = false;
-    let winner;
     function declareWinner() {
       winner = prompt('Enter number of winner');
       winner = parseInt(winner, 10);
@@ -218,57 +253,7 @@
         break;
       case actions.FOLD:
           handleFold();
-          // if(!state.raised && state.street !== "Preflop" ) {
-          //   alert("Can't fold unless facing a raise or a bet.");
-          // }
-          // else if (state.headsUp) {
-          //   if (state.street === "Preflop"){
-          //     state.playerInfo.forEach(player => {
-          //
-          //       if((!player.playerTurn && player.bigBlind && !state.raised) || (!player.playerTurn && player.smallBlind && state.raised) ) {
-          //
-          //         console.log(player.id);
-          //         modifiedState.inHand = state.inHand.filter(item => player.id === item.id);
-          //         modifiedState.playerInfo = state.playerInfo.map(player => {
-          //           if (player.playerTurn) {
-          //             player.playerTurn = false;
-          //           }
-          //           return player;
-          //         })
-          //       }
-          //       else if (!player.playerTurn && !player.bigBlind && !state.raised) {
-          //         alert("Can't fold");
-          //
-          //       }
-          //     });
-          //     if(modifiedState.inHand.length === 1) {
-          //       modifiedState.handIndex++;
-          //       // heads up logic
-          //       // small blind folds heads up preflop
-          //
-          //         modifiedState.playerInfo = state.playerInfo.map(player => {
-          //           if(player.id === modifiedState.inHand[0].id) {
-          //             player.stackSize += state.potSize;
-          //           }
-          //           if(player.smallBlind) {
-          //             player.smallBlind = false;
-          //             player.bigBlind = true;
-          //             player.stackSize -= state.maxBuyIn/100;
-          //           }
-          //           else if (player.bigBlind) {
-          //             player.smallBlind = true;
-          //             player.playerTurn = true;
-          //             player.bigBlind = false;
-          //             player.stackSize -= state.maxBuyIn/200;
-          //           }
-          //           return player;
-          //         });
-          //         modifiedState.potSize = (state.maxBuyIn/100) + (state.maxBuyIn/200);
-          //
-          //       alert('Next hand.  Blinds Placed')
-          //     }
-          //   }
-          // }
+
           break;
         case actions.CHECK:
             // can't check when small blind or dealer preflop heads up.  can only complete
