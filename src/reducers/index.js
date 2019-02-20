@@ -69,6 +69,62 @@
       });
     }
 
+    function handleFold() {
+      if(!state.raised && state.street !== "Preflop" ) {
+        alert("Can't fold unless facing a raise or a bet.");
+      }
+      else if (state.headsUp) {
+        if (state.street === "Preflop"){
+          // this will only work for heads up
+          // try resetting emptying modifiedState.inHand and pushing players how did not fold
+          state.playerInfo.forEach(player => {
+            // name variables for below as if i were narrating
+            if((!player.playerTurn && player.bigBlind && !state.raised) || (!player.playerTurn && player.smallBlind && state.raised) ) {
+
+              console.log(player.id);
+              modifiedState.inHand = state.inHand.filter(item => player.id === item.id);
+              modifiedState.playerInfo = state.playerInfo.map(player => {
+                if (player.playerTurn) {
+                  player.playerTurn = false;
+                }
+                return player;
+              })
+            }
+            else if (!player.playerTurn && !player.bigBlind && !state.raised) {
+              alert("Can't fold");
+
+            }
+          });
+          if(modifiedState.inHand.length === 1) {
+            modifiedState.handIndex++;
+            // heads up logic
+            // small blind folds heads up preflop
+
+              modifiedState.playerInfo = state.playerInfo.map(player => {
+                if(player.id === modifiedState.inHand[0].id) {
+                  player.stackSize += state.potSize;
+                }
+                if(player.smallBlind) {
+                  player.smallBlind = false;
+                  player.bigBlind = true;
+                  player.stackSize -= state.maxBuyIn/100;
+                }
+                else if (player.bigBlind) {
+                  player.smallBlind = true;
+                  player.playerTurn = true;
+                  player.bigBlind = false;
+                  player.stackSize -= state.maxBuyIn/200;
+                }
+                return player;
+              });
+              modifiedState.potSize = (state.maxBuyIn/100) + (state.maxBuyIn/200);
+
+            alert('Next hand.  Blinds Placed')
+          }
+        }
+      }
+    }
+
     let mustDeclareWinner = false;
     let winner;
     function declareWinner() {
@@ -118,57 +174,58 @@
         // });
         break;
       case actions.FOLD:
-          if(!state.raised && state.street !== "Preflop" ) {
-            alert("Can't fold unless facing a raise or a bet.");
-          }
-          else if (state.headsUp) {
-            if (state.street === "Preflop"){
-              state.playerInfo.forEach(player => {
-
-                if((!player.playerTurn && player.bigBlind && !state.raised) || (!player.playerTurn && player.smallBlind && state.raised) ) {
-
-                  console.log(player.id);
-                  modifiedState.inHand = state.inHand.filter(item => player.id === item.id);
-                  modifiedState.playerInfo = state.playerInfo.map(player => {
-                    if (player.playerTurn) {
-                      player.playerTurn = false;
-                    }
-                    return player;
-                  })
-                }
-                else if (!player.playerTurn && !player.bigBlind && !state.raised) {
-                  alert("Can't fold");
-
-                }
-              });
-              if(modifiedState.inHand.length === 1) {
-                modifiedState.handIndex++;
-                // heads up logic
-                // small blind folds heads up preflop
-
-                  modifiedState.playerInfo = state.playerInfo.map(player => {
-                    if(player.id === modifiedState.inHand[0].id) {
-                      player.stackSize += state.potSize;
-                    }
-                    if(player.smallBlind) {
-                      player.smallBlind = false;
-                      player.bigBlind = true;
-                      player.stackSize -= state.maxBuyIn/100;
-                    }
-                    else if (player.bigBlind) {
-                      player.smallBlind = true;
-                      player.playerTurn = true;
-                      player.bigBlind = false;
-                      player.stackSize -= state.maxBuyIn/200;
-                    }
-                    return player;
-                  });
-                  modifiedState.potSize = (state.maxBuyIn/100) + (state.maxBuyIn/200);
-
-                alert('Next hand.  Blinds Placed')
-              }
-            }
-          }
+          handleFold();
+          // if(!state.raised && state.street !== "Preflop" ) {
+          //   alert("Can't fold unless facing a raise or a bet.");
+          // }
+          // else if (state.headsUp) {
+          //   if (state.street === "Preflop"){
+          //     state.playerInfo.forEach(player => {
+          //
+          //       if((!player.playerTurn && player.bigBlind && !state.raised) || (!player.playerTurn && player.smallBlind && state.raised) ) {
+          //
+          //         console.log(player.id);
+          //         modifiedState.inHand = state.inHand.filter(item => player.id === item.id);
+          //         modifiedState.playerInfo = state.playerInfo.map(player => {
+          //           if (player.playerTurn) {
+          //             player.playerTurn = false;
+          //           }
+          //           return player;
+          //         })
+          //       }
+          //       else if (!player.playerTurn && !player.bigBlind && !state.raised) {
+          //         alert("Can't fold");
+          //
+          //       }
+          //     });
+          //     if(modifiedState.inHand.length === 1) {
+          //       modifiedState.handIndex++;
+          //       // heads up logic
+          //       // small blind folds heads up preflop
+          //
+          //         modifiedState.playerInfo = state.playerInfo.map(player => {
+          //           if(player.id === modifiedState.inHand[0].id) {
+          //             player.stackSize += state.potSize;
+          //           }
+          //           if(player.smallBlind) {
+          //             player.smallBlind = false;
+          //             player.bigBlind = true;
+          //             player.stackSize -= state.maxBuyIn/100;
+          //           }
+          //           else if (player.bigBlind) {
+          //             player.smallBlind = true;
+          //             player.playerTurn = true;
+          //             player.bigBlind = false;
+          //             player.stackSize -= state.maxBuyIn/200;
+          //           }
+          //           return player;
+          //         });
+          //         modifiedState.potSize = (state.maxBuyIn/100) + (state.maxBuyIn/200);
+          //
+          //       alert('Next hand.  Blinds Placed')
+          //     }
+          //   }
+          // }
           break;
         case actions.CHECK:
             // can't check when small blind or dealer preflop heads up.  can only complete
@@ -280,6 +337,7 @@
             break;
           case actions.RAISE:
                 //                modifiedState.toPlay = action.amount; need to plug this in somewhere
+                
                 if(action.amount < (state.toPlay * 2)) {
                   alert("Must raise at least twice the big blind or twice the" +
                   " bet or raise.");
@@ -340,7 +398,9 @@
                   }
 
                 }
-
+                break;
+                default:
+                  console.log('No action chosen');
     }
 
 
