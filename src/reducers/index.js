@@ -69,6 +69,27 @@
       });
     }
 
+    function removeFoldedPlayer() {
+      state.playerInfo.forEach(player => {
+        // name variables for below as if i were narrating
+        if((!player.playerTurn && player.bigBlind && !state.raised) || (!player.playerTurn && player.smallBlind && state.raised) ) {
+
+          console.log(player.id);
+          modifiedState.inHand = state.inHand.filter(item => player.id === item.id);
+          modifiedState.playerInfo = state.playerInfo.map(player => {
+            if (player.playerTurn) {
+              player.playerTurn = false;
+            }
+            return player;
+          })
+        }
+        else if (!player.playerTurn && !player.bigBlind && !state.raised) {
+          alert("Can't fold");
+
+        }
+      });
+    }
+
     function handleFold() {
       if(!state.raised && state.street !== "Preflop" ) {
         alert("Can't fold unless facing a raise or a bet.");
@@ -77,24 +98,25 @@
         if (state.street === "Preflop"){
           // this will only work for heads up
           // try resetting emptying modifiedState.inHand and pushing players how did not fold
-          state.playerInfo.forEach(player => {
-            // name variables for below as if i were narrating
-            if((!player.playerTurn && player.bigBlind && !state.raised) || (!player.playerTurn && player.smallBlind && state.raised) ) {
-
-              console.log(player.id);
-              modifiedState.inHand = state.inHand.filter(item => player.id === item.id);
-              modifiedState.playerInfo = state.playerInfo.map(player => {
-                if (player.playerTurn) {
-                  player.playerTurn = false;
-                }
-                return player;
-              })
-            }
-            else if (!player.playerTurn && !player.bigBlind && !state.raised) {
-              alert("Can't fold");
-
-            }
-          });
+          removeFoldedPlayer();
+          // state.playerInfo.forEach(player => {
+          //   // name variables for below as if i were narrating
+          //   if((!player.playerTurn && player.bigBlind && !state.raised) || (!player.playerTurn && player.smallBlind && state.raised) ) {
+          //
+          //     console.log(player.id);
+          //     modifiedState.inHand = state.inHand.filter(item => player.id === item.id);
+          //     modifiedState.playerInfo = state.playerInfo.map(player => {
+          //       if (player.playerTurn) {
+          //         player.playerTurn = false;
+          //       }
+          //       return player;
+          //     })
+          //   }
+          //   else if (!player.playerTurn && !player.bigBlind && !state.raised) {
+          //     alert("Can't fold");
+          //
+          //   }
+          // });
           if(modifiedState.inHand.length === 1) {
             modifiedState.handIndex++;
             // heads up logic
@@ -337,7 +359,7 @@
             break;
           case actions.RAISE:
                 //                modifiedState.toPlay = action.amount; need to plug this in somewhere
-                
+
                 if(action.amount < (state.toPlay * 2)) {
                   alert("Must raise at least twice the big blind or twice the" +
                   " bet or raise.");
