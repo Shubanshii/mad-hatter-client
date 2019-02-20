@@ -49,8 +49,9 @@
     function handleBeginGame() {
       console.log('working');
         state.playerInfo.forEach(player => {
-
-            modifiedState.inHand.push({id: player.id});
+            if(player.inHand) {
+              modifiedState.inHand.push({id: player.id});
+            }
 
         })
       console.log('inhandpushtest', modifiedState.inHand);
@@ -69,25 +70,45 @@
       });
     }
 
+    function handleRemoveFoldedPlayer(players) {
+      console.log(players);
+      modifiedState.inHand = [];
+      players.forEach(player => {
+        if(player.inHand) {
+          modifiedState.inHand.push({id: player.id});
+        }
+      })
+      console.log(modifiedState.inHand);
+    }
+
     function removeFoldedPlayer() {
-      state.playerInfo.forEach(player => {
-        // name variables for below as if i were narrating
-        if((!player.playerTurn && player.bigBlind && !state.raised) || (!player.playerTurn && player.smallBlind && state.raised) ) {
-
-          console.log(player.id);
-          modifiedState.inHand = state.inHand.filter(item => player.id === item.id);
-          modifiedState.playerInfo = state.playerInfo.map(player => {
-            if (player.playerTurn) {
-              player.playerTurn = false;
-            }
-            return player;
-          })
+      modifiedState.playerInfo = state.playerInfo.map(player => {
+        if(player.playerTurn) {
+          player.inHand = false;
         }
-        else if (!player.playerTurn && !player.bigBlind && !state.raised) {
-          alert("Can't fold");
-
-        }
+        return player;
       });
+      handleRemoveFoldedPlayer(modifiedState.playerInfo);
+
+      // state.playerInfo.forEach(player => {
+      //   // name variables for below as if i were narrating
+      //   modifiedState.inHand.push()
+      //   // if((!player.playerTurn && player.bigBlind && !state.raised) || (!player.playerTurn && player.smallBlind && state.raised) ) {
+      //   //
+      //   //   console.log(player.id);
+      //   //   modifiedState.inHand = state.inHand.filter(item => player.id === item.id);
+      //   //   modifiedState.playerInfo = state.playerInfo.map(player => {
+      //   //     if (player.playerTurn) {
+      //   //       player.playerTurn = false;
+      //   //     }
+      //   //     return player;
+      //   //   })
+      //   // }
+      //   else if (!player.playerTurn && !player.bigBlind && !state.raised) {
+      //     alert("Can't fold");
+      //
+      //   }
+      // });
     }
 
     function handleFold() {
