@@ -46,6 +46,29 @@
   // only for heads up dealer preflop right now
   export const hatterReducer = (state=initialState, action) => {
     let modifiedState = Object.assign({}, state, {});
+    function handleBeginGame() {
+      console.log('working');
+        state.playerInfo.forEach(player => {
+
+            modifiedState.inHand.push({id: player.id});
+
+        })
+      console.log('inhandpushtest', modifiedState.inHand);
+      modifiedState.potSize += (state.maxBuyIn/100) + (state.maxBuyIn/200);
+      modifiedState.playerInfo = state.playerInfo.map(player => {
+        // console.log(player);
+        if(player.smallBlind === true) {
+          player.stackSize -= (state.maxBuyIn/200);
+          // return player
+        }
+        else if (player.bigBlind === true) {
+          player.stackSize -= (state.maxBuyIn/100);
+          // return player;
+        }
+        return player;
+      });
+    }
+
     let mustDeclareWinner = false;
     let winner;
     function declareWinner() {
@@ -72,26 +95,27 @@
     }
     switch (action.type) {
       case actions.BEGIN_GAME:
-        console.log('working');
-          state.playerInfo.forEach(player => {
-
-              modifiedState.inHand.push({id: player.id});
-
-          })
-        console.log('inhandpushtest', modifiedState.inHand);
-        modifiedState.potSize += (state.maxBuyIn/100) + (state.maxBuyIn/200);
-        modifiedState.playerInfo = state.playerInfo.map(player => {
-          // console.log(player);
-          if(player.smallBlind === true) {
-            player.stackSize -= (state.maxBuyIn/200);
-            // return player
-          }
-          else if (player.bigBlind === true) {
-            player.stackSize -= (state.maxBuyIn/100);
-            // return player;
-          }
-          return player;
-        });
+        handleBeginGame();
+        // console.log('working');
+        //   state.playerInfo.forEach(player => {
+        //
+        //       modifiedState.inHand.push({id: player.id});
+        //
+        //   })
+        // console.log('inhandpushtest', modifiedState.inHand);
+        // modifiedState.potSize += (state.maxBuyIn/100) + (state.maxBuyIn/200);
+        // modifiedState.playerInfo = state.playerInfo.map(player => {
+        //   // console.log(player);
+        //   if(player.smallBlind === true) {
+        //     player.stackSize -= (state.maxBuyIn/200);
+        //     // return player
+        //   }
+        //   else if (player.bigBlind === true) {
+        //     player.stackSize -= (state.maxBuyIn/100);
+        //     // return player;
+        //   }
+        //   return player;
+        // });
         break;
       case actions.FOLD:
           if(!state.raised && state.street !== "Preflop" ) {
