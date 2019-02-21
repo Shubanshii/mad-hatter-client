@@ -86,6 +86,18 @@
       });
     }
 
+    function incrementStreet() {
+      modifiedState.street = "Flop";
+      modifiedState.playerInfo = state.playerInfo.map(player => {
+        if(player.smallBlind) {
+          player.playerTurn = false;
+        } else if (player.bigBlind) {
+          player.playerTurn = true;
+        }
+        return player;
+      })
+    }
+
     function switchBlinds() {
       modifiedState.playerInfo = modifiedState.playerInfo.map(player => {
         //switch big and small blind and subtract blinds from stacks and add player to hand
@@ -265,7 +277,8 @@
             // substitute this with callamount.
             //modifiedState.potSize += (state.toPlay - (state.maxBuyIn/100));
             modifiedState.potSize += (callAmount - allInRefund);
-            modifiedState.street = "Flop";
+            // modifiedState.street = "Flop";
+            incrementStreet();
             modifiedState.playerInfo.forEach(player => {
               if(player.stackSize === 0) {
                 mustDeclareWinner = true;
