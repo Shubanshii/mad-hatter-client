@@ -226,7 +226,8 @@
 
     function handleCall() {
       // small blind calls heads up
-
+      let callAmount = 0;
+      let allInRefund = 0;
       //let playerInfo = state.playerInfo;
       if(state.headsUp) {
         if(state.street === 'Preflop') {
@@ -238,11 +239,28 @@
             console.log('statetoplay', state.toPlay);
             modifiedState.playerInfo = state.playerInfo.map(player => {
               if (player.playerTurn) {
-                player.stackSize -= (state.toPlay - (state.maxBuyIn/100));
+                if(player.stackSize - (state.toPlay - (state.maxBuyIn/100)) >= 0) {
+                  player.stackSize -= (state.toPlay - (state.maxBuyIn/100));
+                  callAmount = (state.toPlay - (state.maxBuyIn/100));
+                } else {
+                  allInRefund = (state.toPlay - (state.maxBuyIn/100)) - player.stackSize;
+                  console.log(allInRefund);
+                  callAmount = player.stackSize
+                  player.stackSize = 0;
+
+                }
               }
               return player;
             })
-            modifiedState.potSize += (state.toPlay - (state.maxBuyIn/100));
+            modifiedState.playerInfo.forEach(player => {
+              if(!player.playerTurn) {
+                player.stackSize += allInRefund;
+              }
+            })
+            // substitute this with callamount.
+            //modifiedState.potSize += (state.toPlay - (state.maxBuyIn/100));
+            console.log(typeof callAmount);
+            modifiedState.potSize += (callAmount - allInRefund);
             modifiedState.street = "Flop";
             modifiedState.playerInfo.forEach(player => {
               if(player.stackSize === 0) {
