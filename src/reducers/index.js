@@ -4,6 +4,8 @@
   const initialState = {
       playerCount: 2,
       toPlay: 1,
+      amountRaised: 0,
+      toCall: 1,
       handIndex: 1,
       handOver: false,
       // mode: 'Small Blind',
@@ -239,10 +241,13 @@
             console.log('statetoplay', state.toPlay);
             modifiedState.playerInfo = state.playerInfo.map(player => {
               if (player.playerTurn) {
+                // handle modifying caller's stack
                 if(player.stackSize - (state.toPlay - (state.maxBuyIn/100)) >= 0) {
                   player.stackSize -= (state.toPlay - (state.maxBuyIn/100));
                   callAmount = (state.toPlay - (state.maxBuyIn/100));
                 } else {
+                  // handles modifying callers stack and setting all in refund and cll amount if
+                  // if opponent's raise is more than the amount in caller's stack
                   allInRefund = (state.toPlay - (state.maxBuyIn/100)) - player.stackSize;
                   console.log(allInRefund);
                   callAmount = player.stackSize
@@ -259,7 +264,6 @@
             })
             // substitute this with callamount.
             //modifiedState.potSize += (state.toPlay - (state.maxBuyIn/100));
-            console.log(typeof callAmount);
             modifiedState.potSize += (callAmount - allInRefund);
             modifiedState.street = "Flop";
             modifiedState.playerInfo.forEach(player => {
@@ -351,6 +355,9 @@
                   bigBlindOpenRaises();
                 }
               }
+            } else {
+              // handle reraise
+
             }
           }
           if(unraised) {
@@ -359,6 +366,7 @@
                 if(player.playerTurn && player.smallBlind) {
                   if(player.stackSize - (action.amount - state.maxBuyIn/200) >= 0) {
                     player.playerTurn = false;
+                    // modifying element outside of array, probably not good
                     modifiedState.raised = true;
                     player.stackSize -= (action.amount - state.maxBuyIn/200);
                   }
