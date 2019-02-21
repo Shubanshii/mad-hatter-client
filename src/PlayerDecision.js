@@ -80,6 +80,19 @@ export class PlayerDecision extends Component {
   render() {
     // const playerCount = this.props.playerCount;
     // const player = this.props.playerInfo.find(player => player.playerTurn === true);
+    console.log('raised', this.props.raised);
+    console.log('street', this.props.street);
+    let raised = this.props.raised;
+    let street = this.props.street;
+    let minRaise = 0;
+    if (street === 'Preflop') {
+      if(!raised) {
+        minRaise = this.props.toPlay * 2;
+      } else {
+        minRaise = this.props.toPlay * 2 - 1;
+      }
+    }
+
 
     return (
       <div className="App">
@@ -111,9 +124,9 @@ export class PlayerDecision extends Component {
             name="raiseAmount"
             id="raiseAmount"
             className="text"
-            min={this.props.toPlay * 2}
+            min={minRaise}
             /*max="100"*/
-            placeholder={this.props.toPlay * 2}
+            placeholder={minRaise}
             autoComplete="off"
             /*aria-labelledby="feedback"*/
             ref={input => (this.input = input)}
@@ -143,7 +156,9 @@ const mapStateToProps = state => ({
   handOver: state.handOver,
   headsUp: state.headsUp,
   inHand: state.inHand,
-  toPlay: state.toPlay
+  toPlay: state.toPlay,
+  street: state.street,
+  raised: state.raised
 });
 
 export default connect(mapStateToProps)(PlayerDecision);
