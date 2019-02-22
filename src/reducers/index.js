@@ -7,6 +7,7 @@
       amountRaised: 0,
       currentRaise: 0,
       toCall: 1,
+      preFlopThreeBet: false,
       handIndex: 1,
       handOver: false,
       // mode: 'Small Blind',
@@ -53,6 +54,7 @@
     let modifiedState = Object.assign({}, state, {});
     let mustDeclareWinner = false;
     let winner;
+    let toAdd = 0;
 
     function addAllPlayersToHand() {
       modifiedState.inHand = [];
@@ -350,8 +352,9 @@
 
     function smallBlindOpenRaises() {
       if(state.playerInfo[i].stackSize - (action.amount - state.maxBuyIn/200) >= 0) {
-        modifiedState.toPlay = action.amount
+        modifiedState.toPlay = action.amount;
         modifiedState.potSize += (action.amount - state.maxBuyIn/200);
+        modifiedState.preFlopThreeBet = true;
         //Repeating yourself here.  add smallblind to func as an arg
         modifiedState.playerInfo = state.playerInfo.map(player => {
           if(player.smallBlind && player.playerTurn) {
@@ -365,8 +368,9 @@
 
     function bigBlindOpenRaises() {
       if(state.playerInfo[i].stackSize - (action.amount - state.maxBuyIn/100) >= 0) {
-        modifiedState.toPlay = action.amount
+        modifiedState.toPlay = action.amount;
         modifiedState.potSize += (action.amount - state.maxBuyIn/100);
+        modifiedState.preFlopThreeBet = true;
         //repeating yourself same as above.  maybe a function for both
         // small and big in this scenario of adding to contributedTowardsToPlay
         // is in order
@@ -378,6 +382,30 @@
       } else {
         alert('Not enough funds');
       }
+    }
+
+    function preFlopThreeBetAdd() {
+
+      if(state.toPlay * 2 - 1) {
+        toAdd = action.amount - state.toPlay;
+        modifiedState.potSize += toAdd;
+      }
+    }
+
+    function preFlopThreeBetSubtract() {
+      modifiedState.playerInfo = state.playerInfo.map(player => {
+        if (player.playerTurn) {
+          player.stackSize -= toAdd;
+        }
+        return player;
+      })
+    }
+
+    function preFlopThreeBet() {
+      // add money to pot
+      preFlopThreeBetAdd();
+      preFlopThreeBetSubtract();
+      switchTurns();
     }
 
     function handleRaise() {
@@ -410,10 +438,6 @@
                       bigBlindOpenRaises();
                     }
                   }
-                 else {
-                  // handle reraise
-
-                }
               }
 
 
@@ -442,6 +466,9 @@
                   switchTurns();
             }
           }
+        }
+        else if(!unraised && state.preFlopThreeBet) {
+          preFlopThreeBet();
         }
 
       }
