@@ -394,8 +394,8 @@
         alert("Must raise at least twice the big blind or twice the" +
         " bet or raise.");
       }
-      if(unraised) {
-        if(pF) {
+      if(pF) {
+        if(unraised) {
           if(action.amount >= (state.toPlay * 2)) {
             console.log('raising');
             //raise from small blind heads up
@@ -420,7 +420,7 @@
                   modifiedState.playerInfo = state.playerInfo.map(player => {
                     if(player.playerTurn && player.smallBlind) {
                       if(player.stackSize - (action.amount - state.maxBuyIn/200) >= 0) {
-                        player.playerTurn = false;
+                        // player.playerTurn = false;
                         // modifying element outside of array, probably not good
                         modifiedState.raised = true;
                         player.stackSize -= (action.amount - state.maxBuyIn/200);
@@ -428,7 +428,7 @@
                     }
                     else if(player.playerTurn && player.bigBlind) {
                       if(player.stackSize - (action.amount - state.maxBuyIn/100) >= 0) {
-                        player.playerTurn = false;
+                        // player.playerTurn = false;
                         modifiedState.raised = true;
                         player.stackSize -= (action.amount - state.maxBuyIn/100);
                       }
