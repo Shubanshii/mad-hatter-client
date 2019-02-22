@@ -90,6 +90,17 @@
       });
     }
 
+    function switchTurns() {
+      modifiedState.playerInfo = modifiedState.playerInfo.map(player => {
+        if(player.playerTurn) {
+          player.playerTurn = false;
+        }else {
+          player.playerTurn = true;
+        }
+        return player;
+      });
+    }
+
     function incrementStreet() {
       modifiedState.street = "Flop";
       modifiedState.playerInfo = state.playerInfo.map(player => {
@@ -372,6 +383,10 @@
     function handleRaise() {
       // modifiedState.toPlay = action.amount; need to plug this in somewhere
       // repeating yourself
+      let unraised = !state.raised;
+      let pF = state.street === 'Preflop';
+
+
       if(!state.raised && action.amount < (state.toPlay * 2)) {
         alert("Must raise at least twice the big blind or twice the" +
         " bet or raise.");
@@ -379,56 +394,58 @@
         alert("Must raise at least twice the big blind or twice the" +
         " bet or raise.");
       }
-      if(action.amount >= (state.toPlay * 2)) {
-        console.log('raising');
-        //raise from small blind heads up
-        let pF = state.street === 'Preflop';
-        let unraised = !state.raised;
-        if(state.headsUp) {
-          for (i=0; i<state.playerInfo.length; i++) {
-            if(unraised) {
-              if(pF) {
-                if(state.playerInfo[i].playerTurn && state.playerInfo[i].smallBlind) {
-                  smallBlindOpenRaises();
+      if(unraised) {
+        if(pF) {
+          if(action.amount >= (state.toPlay * 2)) {
+            console.log('raising');
+            //raise from small blind heads up
+            if(state.headsUp) {
+              for (i=0; i<state.playerInfo.length; i++) {
 
-                } else if(state.playerInfo[i].playerTurn && state.playerInfo[i].bigBlind) {
-                  bigBlindOpenRaises();
+                  if(pF) {
+                    if(state.playerInfo[i].playerTurn && state.playerInfo[i].smallBlind) {
+                      smallBlindOpenRaises();
+
+                    } else if(state.playerInfo[i].playerTurn && state.playerInfo[i].bigBlind) {
+                      bigBlindOpenRaises();
+                    }
+                  }
+                 else {
+                  // handle reraise
+
                 }
               }
-            } else {
-              // handle reraise
 
+
+                  modifiedState.playerInfo = state.playerInfo.map(player => {
+                    if(player.playerTurn && player.smallBlind) {
+                      if(player.stackSize - (action.amount - state.maxBuyIn/200) >= 0) {
+                        player.playerTurn = false;
+                        // modifying element outside of array, probably not good
+                        modifiedState.raised = true;
+                        player.stackSize -= (action.amount - state.maxBuyIn/200);
+                      }
+                    }
+                    else if(player.playerTurn && player.bigBlind) {
+                      if(player.stackSize - (action.amount - state.maxBuyIn/100) >= 0) {
+                        player.playerTurn = false;
+                        modifiedState.raised = true;
+                        player.stackSize -= (action.amount - state.maxBuyIn/100);
+                      }
+                    }
+                    //instead use switch turn function
+                    // else if (!player.playerTurn) {
+                    //   player.playerTurn = true;
+                    // }
+                    return player;
+                  })
+                  switchTurns();
             }
           }
-          if(unraised) {
-            if(pF) {
-              modifiedState.playerInfo = state.playerInfo.map(player => {
-                if(player.playerTurn && player.smallBlind) {
-                  if(player.stackSize - (action.amount - state.maxBuyIn/200) >= 0) {
-                    player.playerTurn = false;
-                    // modifying element outside of array, probably not good
-                    modifiedState.raised = true;
-                    player.stackSize -= (action.amount - state.maxBuyIn/200);
-                  }
-                }
-                else if(player.playerTurn && player.bigBlind) {
-                  if(player.stackSize - (action.amount - state.maxBuyIn/100) >= 0) {
-                    player.playerTurn = false;
-                    modifiedState.raised = true;
-                    player.stackSize -= (action.amount - state.maxBuyIn/100);
-                  }
-                }
-                else if (!player.playerTurn) {
-                  player.playerTurn = true;
-                }
-                return player;
-              })
-            }
-          }
-
         }
 
       }
+
     }
 
     function declareWinner() {
