@@ -58,6 +58,10 @@
 
     function addAllPlayersToHand() {
       modifiedState.inHand = [];
+      modifiedState.playerInfo = state.playerInfo.map(player => {
+        player.inHand = true;
+        return player;
+      })
       state.playerInfo.forEach(player => {
           if(player.inHand) {
             modifiedState.inHand.push({id: player.id});
@@ -90,6 +94,14 @@
         }
         return player;
       });
+    }
+
+    function setUpNextHand() {
+      modifiedState.handIndex++;
+      addAllPlayersToHand();
+      switchBlinds();
+      modifiedState.potSize = (state.maxBuyIn/100) + (state.maxBuyIn/200);
+      alert('Next hand.  Blinds Placed');
     }
 
     function switchTurns() {
@@ -210,7 +222,7 @@
           //   }
           // });
           if(modifiedState.inHand.length === 1) {
-            modifiedState.handIndex++;
+            // modifiedState.handIndex++;
             // heads up logic
             // small blind folds heads up preflop
             // set id of winner
@@ -218,7 +230,7 @@
             //pass id of winner to reward winner
             rewardWinner(winner);
             // this is heads up so blinds will be switched instead of rotated
-            switchBlinds();
+            // switchBlinds();
               // modifiedState.playerInfo = state.playerInfo.map(player => {
 
               //   if(player.smallBlind) {
@@ -234,9 +246,11 @@
               //   }
               //   return player;
               // });
-              modifiedState.potSize = (state.maxBuyIn/100) + (state.maxBuyIn/200);
-              addAllPlayersToHand();
-            alert('Next hand.  Blinds Placed')
+              // modifiedState.potSize = (state.maxBuyIn/100) + (state.maxBuyIn/200);
+              // addAllPlayersToHand();
+              setUpNextHand();
+
+            // alert('Next hand.  Blinds Placed')
           }
         }
       }
@@ -309,35 +323,19 @@
               console.log('calleachplayer', player);
             })
             if(mustDeclareWinner) {
-              // function declareWinner() {
-              //   winner = prompt('Enter number of winner');
-              //   winner = parseInt(winner, 10);
-              // }
-              // function rewardWinner(winner) {
-              //   console.log('rewardwinner', winner);
-              //   modifiedState.playerInfo = state.playerInfo.map(player => {
-              //     if (player.id === winner) {
-              //       player.stackSize += modifiedState.potSize;
-              //     }
-              //     return player;
-              //   })
-              // }
+
               declareWinner();
-              // let foundWinner = state.inHand.find(player => {
-              //   return player.id === winner;
-              // });
-              //
-              // console.log(foundWinner);
-              // if(foundWinner === undefined) {
-              //   alert('Player not in hand');
-              //   declareWinner()
-              // }
+
               for(i = 0; i<state.inHand.length; i++) {
 
                 if (state.inHand[i].id === winner) {
                   rewardWinner(winner);
                 }
+                if(modifiedState.playerInfo[i].stackSize === 0) {
+                  alert('Game over.');
+                }
               }
+
               // if(winner > state.playerInfo.length) {
               //
               // }
