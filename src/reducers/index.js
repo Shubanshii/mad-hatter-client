@@ -55,6 +55,7 @@
     let mustDeclareWinner = false;
     let winner;
     let toAdd = 0;
+    let currentContribution = 0;
 
     function addAllPlayersToHand() {
       modifiedState.inHand = [];
@@ -290,7 +291,7 @@
             modifiedState.playerInfo = state.playerInfo.map(player => {
               if (player.playerTurn) {
                 // handle modifying caller's stack
-                if(player.stackSize - (state.toPlay - (state.maxBuyIn/100)) >= 0) {
+                if (player.stackSize - (state.toPlay - (state.maxBuyIn/100)) >= 0) {
                   player.stackSize -= (state.toPlay - (state.maxBuyIn/100));
                   player.contributedTowardsToPlay += (state.toPlay - (state.maxBuyIn/100));
                   callAmount = (state.toPlay - (state.maxBuyIn/100));
@@ -358,6 +359,7 @@
           if(player.smallBlind && player.playerTurn) {
             player.contributedTowardsToPlay = action.amount;
           }
+          return player;
         })
       } else {
         alert('Not enough funds');
@@ -376,6 +378,7 @@
           if(player.bigBlind && player.playerTurn) {
             player.contributedTowardsToPlay = action.amount;
           }
+          return player;
         })
       } else {
         alert('Not enough funds');
@@ -383,9 +386,13 @@
     }
 
     function preFlopThreeBetAdd() {
-
-      if(state.toPlay * 2 - 1) {
-        toAdd = action.amount - state.toPlay;
+      state.playerInfo.forEach(player => {
+        if(player.playerTurn) {
+          currentContribution = player.contributedTowardsToPlay;
+        }
+      });
+      if(action.amount >= state.toPlay * 2 - 1) {
+        toAdd = modifiedState.toPlay - currentContribution;
         modifiedState.potSize += toAdd;
       }
     }
@@ -401,8 +408,17 @@
 
     function preFlopThreeBet() {
       // add money to pot
+      modifiedState.toPlay = action.amount;
+      console.log('toplay', modifiedState.toPlay);
       preFlopThreeBetAdd();
       preFlopThreeBetSubtract();
+      modifiedState.playerInfo = modifiedState.playerInfo.map(player => {
+        if(player.playerTurn) {
+          player.contributedTowardsToPlay = action.amount;
+        }
+        return player;
+      })
+      console.log(modifiedState);
       switchTurns();
     }
 
@@ -624,7 +640,5 @@
                 default:
                   console.log('No action chosen');
     }
-
-
       return modifiedState;
   };
