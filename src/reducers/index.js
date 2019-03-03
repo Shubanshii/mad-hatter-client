@@ -366,8 +366,10 @@
     function smallBlindOpenRaises() {
       if(state.playerInfo[i].stackSize - (action.amount - state.maxBuyIn/200) >= 0) {
 
-        modifiedState.amountRaised = amount - state.toPlay;
+        modifiedState.amountRaised = amount - modifiedState.toPlay;
+        console.log('amountraised', modifiedState.amountRaised);
         modifiedState.toPlay = amount;
+        console.log('toplay', modifiedState.toPlay);
         modifiedState.potSize += (amount - state.maxBuyIn/200);
         modifiedState.preFlopThreeBet = true;
         //Repeating yourself here.  add smallblind to func as an arg
@@ -384,8 +386,10 @@
 
     function bigBlindOpenRaises() {
       if(state.playerInfo[i].stackSize - (action.amount - state.maxBuyIn/100) >= 0) {
-        modifiedState.amountRaised = amount - state.toPlay;
+        modifiedState.amountRaised = amount - modifiedState.toPlay;
+        console.log('amountraised', modifiedState.amountRaised);
         modifiedState.toPlay = amount;
+        console.log('toplay', modifiedState.toPlay);
         modifiedState.potSize += (amount - state.maxBuyIn/100);
         modifiedState.preFlopThreeBet = true;
         //repeating yourself same as above.  maybe a function for both
@@ -426,8 +430,10 @@
 
     function preFlopThreeBet() {
       // add money to pot
+      modifiedState.amountRaised = amount - modifiedState.toPlay;
       modifiedState.toPlay = amount;
-      console.log('toplay', modifiedState.toPlay);
+
+      console.log('toplay3bet', modifiedState.toPlay);
       preFlopThreeBetAdd();
       preFlopThreeBetSubtract();
       modifiedState.playerInfo = modifiedState.playerInfo.map(player => {
