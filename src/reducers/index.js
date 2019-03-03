@@ -290,20 +290,33 @@
             // big blind calls raise heads up
             console.log('statetoplay', state.toPlay);
             modifiedState.playerInfo = state.playerInfo.map(player => {
-              if (player.playerTurn) {
-                // handle modifying caller's stack
-                if (player.stackSize - (state.toPlay - (state.maxBuyIn/100)) >= 0) {
-                  player.stackSize -= (state.toPlay - (state.maxBuyIn/100));
+              // if (player.playerTurn) {
+              //   // handle modifying caller's stack
+              //   if (player.stackSize - (state.toPlay - (state.maxBuyIn/100)) >= 0) {
+              //     player.stackSize -= (state.toPlay - (state.maxBuyIn/100));
+              //     player.contributedTowardsToPlay += (state.toPlay - (state.maxBuyIn/100));
+              //     callAmount = (state.toPlay - (state.maxBuyIn/100));
+              //   } else {
+              //     // handles modifying callers stack and setting all in refund and cll amount if
+              //     // if opponent's raise is more than the amount in caller's stack
+              //     allInRefund = (state.toPlay - (state.maxBuyIn/100)) - player.stackSize;
+              //     console.log(allInRefund);
+              //     callAmount = player.stackSize
+              //     player.stackSize = 0;
+              //
+              //   }
+              // }
+              if(player.playerTurn) {
+                if(player.stackSize - (state.toPlay - player.contributedTowardsToPlay) >= 0) {
+                  player.stackSize -= state.toPlay - player.contributedTowardsToPlay;
                   player.contributedTowardsToPlay += (state.toPlay - (state.maxBuyIn/100));
                   callAmount = (state.toPlay - (state.maxBuyIn/100));
-                } else {
-                  // handles modifying callers stack and setting all in refund and cll amount if
-                  // if opponent's raise is more than the amount in caller's stack
-                  allInRefund = (state.toPlay - (state.maxBuyIn/100)) - player.stackSize;
-                  console.log(allInRefund);
-                  callAmount = player.stackSize
-                  player.stackSize = 0;
-
+                }
+                else {
+                      allInRefund = (state.toPlay - player.contributedTowardsToPlay) - player.stackSize;
+                      console.log('allinrefund', allInRefund);
+                      callAmount = player.stackSize
+                      player.stackSize = 0;
                 }
               }
               return player;
