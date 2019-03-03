@@ -56,6 +56,7 @@
     let winner;
     let toAdd = 0;
     let currentContribution = 0;
+    let amount = 0;
 
     function addAllPlayersToHand() {
       modifiedState.inHand = [];
@@ -351,13 +352,15 @@
 
     function smallBlindOpenRaises() {
       if(state.playerInfo[i].stackSize - (action.amount - state.maxBuyIn/200) >= 0) {
-        modifiedState.toPlay = action.amount;
-        modifiedState.potSize += (action.amount - state.maxBuyIn/200);
+
+        modifiedState.amountRaised = amount - state.toPlay;
+        modifiedState.toPlay = amount;
+        modifiedState.potSize += (amount - state.maxBuyIn/200);
         modifiedState.preFlopThreeBet = true;
         //Repeating yourself here.  add smallblind to func as an arg
         modifiedState.playerInfo = state.playerInfo.map(player => {
           if(player.smallBlind && player.playerTurn) {
-            player.contributedTowardsToPlay = action.amount;
+            player.contributedTowardsToPlay = amount;
           }
           return player;
         })
@@ -368,15 +371,16 @@
 
     function bigBlindOpenRaises() {
       if(state.playerInfo[i].stackSize - (action.amount - state.maxBuyIn/100) >= 0) {
-        modifiedState.toPlay = action.amount;
-        modifiedState.potSize += (action.amount - state.maxBuyIn/100);
+        modifiedState.amountRaised = amount - state.toPlay;
+        modifiedState.toPlay = amount;
+        modifiedState.potSize += (amount - state.maxBuyIn/100);
         modifiedState.preFlopThreeBet = true;
         //repeating yourself same as above.  maybe a function for both
         // small and big in this scenario of adding to contributedTowardsToPlay
         // is in order
         modifiedState.playerInfo = state.playerInfo.map(player => {
           if(player.bigBlind && player.playerTurn) {
-            player.contributedTowardsToPlay = action.amount;
+            player.contributedTowardsToPlay = amount;
           }
           return player;
         })
@@ -391,10 +395,11 @@
           currentContribution = player.contributedTowardsToPlay;
         }
       });
-      if(action.amount >= state.toPlay * 2 - 1) {
-        toAdd = modifiedState.toPlay - currentContribution;
-        modifiedState.potSize += toAdd;
-      }
+      console.log('currentcontribution', currentContribution);
+      //if(action.amount >= state.toPlay * 2 - 1) {
+      toAdd = modifiedState.toPlay - currentContribution;
+      modifiedState.potSize += toAdd;
+      //}
     }
 
     function preFlopThreeBetSubtract() {
@@ -408,13 +413,13 @@
 
     function preFlopThreeBet() {
       // add money to pot
-      modifiedState.toPlay = action.amount;
+      modifiedState.toPlay = amount;
       console.log('toplay', modifiedState.toPlay);
       preFlopThreeBetAdd();
       preFlopThreeBetSubtract();
       modifiedState.playerInfo = modifiedState.playerInfo.map(player => {
         if(player.playerTurn) {
-          player.contributedTowardsToPlay = action.amount;
+          player.contributedTowardsToPlay = amount;
         }
         return player;
       })
@@ -425,17 +430,18 @@
     function handleRaise() {
       // modifiedState.toPlay = action.amount; need to plug this in somewhere
       // repeating yourself
+      amount = parseInt(action.amount, 10);
       let unraised = !state.raised;
       let pF = state.street === 'Preflop';
 
-
-      if(!state.raised && action.amount < (state.toPlay * 2)) {
-        alert("Must raise at least twice the big blind or twice the" +
-        " bet or raise.");
-      } else if (state.raised && action.amount < (state.toPlay * 2 - 1)) {
-        alert("Must raise at least twice the big blind or twice the" +
-        " bet or raise.");
-      }
+      //
+      // if(!state.raised && action.amount < (state.toPlay * 2)) {
+      //   alert("Must raise at least twice the big blind or twice the" +
+      //   " bet or raise.");
+      // } else if (state.raised && action.amount < (state.toPlay * 2 - 1)) {
+      //   alert("Must raise at least twice the big blind or twice the" +
+      //   " bet or raise.");
+      // }
       if(pF) {
         if(unraised) {
           if(action.amount >= (state.toPlay * 2)) {

@@ -89,7 +89,8 @@ export class PlayerDecision extends Component {
       if(!raised) {
         minRaise = this.props.toPlay * 2;
       } else {
-        minRaise = this.props.toPlay * 2 - 1;
+        // minRaise = this.props.toPlay * 2 - 1;
+        minRaise = this.props.toPlay + this.props.amountRaised;
       }
     }
 
@@ -158,7 +159,8 @@ const mapStateToProps = state => ({
   inHand: state.inHand,
   toPlay: state.toPlay,
   street: state.street,
-  raised: state.raised
+  raised: state.raised,
+  amountRaised: state.amountRaised
 });
 
 export default connect(mapStateToProps)(PlayerDecision);
