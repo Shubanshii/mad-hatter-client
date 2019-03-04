@@ -13,6 +13,7 @@
       handOver: false,
       // mode: 'Small Blind',
       raised: false,
+      checkedPlayers: 0,
       headsUp: true,
       inHand: [],
       streets: ['Preflop', 'Flop', 'Turn', 'River'],
@@ -27,7 +28,8 @@
           playerIndex: 0,
           smallBlind: true,
           bigBlind: false,
-          contributedTowardsToPlay: 0
+          contributedTowardsToPlay: 0,
+          hasChecked: false
         },
         {
           id: 2,
@@ -38,7 +40,8 @@
           playerIndex: 1,
           smallBlind: false,
           bigBlind: true,
-          contributedTowardsToPlay: 0
+          contributedTowardsToPlay: 0,
+          hasChecked: false
         }
       ],
       potSize: 0,
@@ -117,16 +120,23 @@
     }
 
     function incrementStreet() {
-      modifiedState.street = "Flop";
+      //modifiedState.street = "Flop";
+      console.log(state.streets.indexOf(state.street));
+      let streetIndex = state.streets.indexOf(state.street);
+      streetIndex++;
+      modifiedState.street = state.streets[streetIndex];
       modifiedState.toPlay = 0;
       modifiedState.amountRaised = 0;
       modifiedState.raised = false;
+      modifiedState.checkedPlayers = 0;
       modifiedState.playerInfo = state.playerInfo.map(player => {
         if(player.smallBlind) {
           player.playerTurn = false;
+          player.hasChecked = false;
           resetContributed(player, 0);
         } else if (player.bigBlind) {
           player.playerTurn = true;
+          player.hasChecked = false;
           resetContributed(player, 0);
         }
         return player;
@@ -225,16 +235,41 @@
     }
 
     function handleCheck() {
-      for (i = 0; i<state.playerInfo.length; i++) {
-        if(state.playerInfo[i].smallBlind && state.playerInfo[i].playerTurn) {
-          alert("Can't check here");
-        }
-        // Big Blind checks preflop
-        else if (state.playerInfo[i].bigBlind && state.playerInfo[i].playerTurn) {
-          modifiedState.street = "Flop";
-        }
+      console.log(state.street);
+      if(state.street === 'Preflop') {
+        for (i = 0; i<state.playerInfo.length; i++) {
+          if(state.playerInfo[i].smallBlind && state.playerInfo[i].playerTurn) {
+            alert("Can't check here");
+          }
+          // Big Blind checks preflop
+          else if (state.playerInfo[i].bigBlind && state.playerInfo[i].playerTurn) {
+            // modifiedState.street = "Flop";
+            incrementStreet();
+          }
 
+        }
+      } else {
+        console.log('checking');
+        // there has to be a better way to do this
+        modifiedState.playerInfo = state.playerInfo.map(player => {
+          if(player.playerTurn) {
+            player.hasChecked = true;
+            modifiedState.checkedPlayers++;
+          }
+          return player;
+        });
+        switchTurns();
+        if(modifiedState.checkedPlayers === modifiedState.inHand.length) {
+            incrementStreet();
+          }
+
+        // state.playerInfo.forEach(player => {
+        //   if(!player.hasChecked) {
+        //
+        //   }
+        // })
       }
+
     }
 
     function smallBlindCompletes() {
@@ -252,7 +287,7 @@
 
     function handleCall() {
       // small blind calls heads up
-      let callAmount = 0;
+      // let callAmount = 0;
       let allInRefund = 0;
       if(state.headsUp) {
         if(state.street === 'Preflop') {
@@ -296,6 +331,7 @@
               if(!player.playerTurn) {
                 player.stackSize += allInRefund;
               }
+              return player;
             })
             // substitute this with callamount.
             console.log('amount', amount);
@@ -505,7 +541,7 @@
             if(state.raised) {
               alert("Can't check here");
             }
-            else if (state.headsUp === true && state.raised === false && state.street === "Preflop") {
+            else if (state.headsUp === true && state.raised === false) {
               handleCheck();
 
             }
