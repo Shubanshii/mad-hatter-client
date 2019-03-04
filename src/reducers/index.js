@@ -60,6 +60,7 @@
     let amount = 0;
     let smallBlind = state.maxBuyIn / 200;
     let bigBlind = state.maxBuyIn / 100;
+    let i = 0;
 
     function addAllPlayersToHand() {
       modifiedState.inHand = [];
@@ -94,6 +95,7 @@
 
     function setUpNextHand() {
       modifiedState.handIndex++;
+      modifiedState.street = "Preflop";
       addAllPlayersToHand();
       switchBlinds();
       modifiedState.toPlay = 1;
@@ -217,6 +219,19 @@
       }
     }
 
+    function handleCheck() {
+      for (i = 0; i<state.playerInfo.length; i++) {
+        if(state.playerInfo[i].smallBlind && state.playerInfo[i].playerTurn) {
+          alert("Can't check here");
+        }
+        // Big Blind checks preflop
+        else if (state.playerInfo[i].bigBlind && state.playerInfo[i].playerTurn) {
+          modifiedState.street = "Flop";
+        }
+
+      }
+    }
+
     function smallBlindCompletes() {
       addToPot(smallBlind);
       modifiedState.playerInfo = state.playerInfo.map(player => {
@@ -337,7 +352,7 @@
         console.log('amountraised', modifiedState.amountRaised);
         modifiedState.toPlay = amount;
         console.log('toplay', modifiedState.toPlay);
-        modifiedState.potSize += (amount - state.maxBuyIn/100);
+        addToPot(amount - state.maxBuyIn/100);
         modifiedState.preFlopThreeBet = true;
         //repeating yourself same as above.  maybe a function for both
         // small and big in this scenario of adding to contributedTowardsToPlay
@@ -361,13 +376,13 @@
       });
       console.log('currentcontribution', currentContribution);
       toAdd = modifiedState.toPlay - currentContribution;
-      modifiedState.potSize += toAdd;
+      addToPot(toAdd);
     }
 
     function preFlopThreeBetSubtract() {
       modifiedState.playerInfo = state.playerInfo.map(player => {
         if (player.playerTurn) {
-          player.stackSize -= toAdd;
+          removeFromStack(player, toAdd);
         }
         return player;
       })
@@ -422,14 +437,14 @@
 
                         // modifying element outside of array, probably not good
                         modifiedState.raised = true;
-                        player.stackSize -= (action.amount - state.maxBuyIn/200);
+                        removeFromStack(player, (action.amount - state.maxBuyIn/200));
                       }
                     }
                     else if(player.playerTurn && player.bigBlind) {
                       if(player.stackSize - (action.amount - state.maxBuyIn/100) >= 0) {
                         // player.playerTurn = false;
                         modifiedState.raised = true;
-                        player.stackSize -= (action.amount - state.maxBuyIn/100);
+                        removeFromStack(player, (action.amount - state.maxBuyIn/100));
                       }
                     }
                     //instead use switch turn function
@@ -465,6 +480,7 @@
       console.log('rewardwinner', winner);
       modifiedState.playerInfo = state.playerInfo.map(player => {
         if (player.id === winner) {
+          // add pot to winner's stack
           player.stackSize += modifiedState.potSize;
         }
         return player;
@@ -485,16 +501,8 @@
               alert("Can't check here");
             }
             else if (state.headsUp === true && state.raised === false && state.street === "Preflop") {
-              for (var i = 0; i<state.playerInfo.length; i++) {
-                if(state.playerInfo[i].smallBlind && state.playerInfo[i].playerTurn) {
-                  alert("Can't check here");
-                }
-                // Big Blind checks preflop
-                else if (state.playerInfo[i].bigBlind && state.playerInfo[i].playerTurn) {
-                  modifiedState.street = "Flop";
-                }
+              handleCheck();
 
-              }
             }
             break;
         case actions.CALL:
