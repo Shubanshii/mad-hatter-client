@@ -84,7 +84,18 @@ export class PlayerDecision extends Component {
     console.log('street', this.props.street);
     let raised = this.props.raised;
     let street = this.props.street;
+    let contributed = 0;
+    let stackSize = 0;
+    this.props.playerInfo.forEach(player => {
+      if(player.playerTurn) {
+        contributed = player.contributedTowardsToPlay;
+        stackSize = player.stackSize;
+      }
+    })
+    console.log('cont', contributed);
+    console.log('stacksize', stackSize);
     let minRaise = 0;
+    let maxRaise = contributed + stackSize;
     if (street === 'Preflop') {
       if(!raised) {
         minRaise = this.props.toPlay * 2;
@@ -126,6 +137,7 @@ export class PlayerDecision extends Component {
             id="raiseAmount"
             className="text"
             min={minRaise}
+            max={maxRaise}
             /*max="100"*/
             placeholder={minRaise}
             autoComplete="off"

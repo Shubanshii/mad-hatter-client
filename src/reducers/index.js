@@ -77,25 +77,16 @@
 
     function handleBeginGame() {
       addAllPlayersToHand();
-      // console.log('working');
-      //   state.playerInfo.forEach(player => {
-      //       if(player.inHand) {
-      //         modifiedState.inHand.push({id: player.id});
-      //       }
-      //
-      //   })
       console.log('inhandpushtest', modifiedState.inHand);
-      modifiedState.potSize += (state.maxBuyIn/100) + (state.maxBuyIn/200);
+      addToPot(smallBlind + bigBlind);
       modifiedState.playerInfo = state.playerInfo.map(player => {
-        // console.log(player);
         if(player.smallBlind === true) {
-          player.stackSize -= (state.maxBuyIn/200);
-          player.contributedTowardsToPlay += state.maxBuyIn/200;
-          // return player
+          removeFromStack(player, smallBlind)
+          setContributedTowards(player, smallBlind);
         }
         else if (player.bigBlind === true) {
-          player.stackSize -= (state.maxBuyIn/100);
-          player.contributedTowardsToPlay += state.maxBuyIn/100;
+          removeFromStack(player, bigBlind);
+          setContributedTowards(player, bigBlind)
         }
         return player;
       });
@@ -105,7 +96,10 @@
       modifiedState.handIndex++;
       addAllPlayersToHand();
       switchBlinds();
-      modifiedState.potSize = (state.maxBuyIn/100) + (state.maxBuyIn/200);
+      modifiedState.toPlay = 1;
+      modifiedState.potSize = 0;
+      modifiedState.completed = false;
+      addToPot(smallBlind + bigBlind);
       alert('Next hand.  Blinds Placed');
     }
 
@@ -139,8 +133,8 @@
           player.smallBlind = false;
           player.bigBlind = true;
           player.inHand = true;
-          player.stackSize -= (state.maxBuyIn / 100);
-          player.contributedTowardsToPlay = state.maxBuyIn/100;
+          removeFromStack(player, bigBlind);
+          resetContributed(player, bigBlind);
 
         }
         else if (player.bigBlind) {
@@ -148,8 +142,8 @@
           player.playerTurn = true;
           player.bigBlind = false;
           player.inHand = true;
-          player.stackSize -= (state.maxBuyIn / 200);
-          player.contributedTowardsToPlay = state.maxBuyIn/200;
+          removeFromStack(player, smallBlind);
+          resetContributed(player, smallBlind);
 
         }
         return player;
@@ -162,12 +156,16 @@
 
     function removeFromStack(player, amount) {
       player.stackSize -= amount;
-      // modifiedState.playerInfo = state.playerInfo.map(player => {
-      //   if (player.playerTurn && player.smallBlind) {
-      //     player.stackSize -= amount;
-      //   }
-      //   return player;
-      // })
+
+    }
+
+    function setContributedTowards(player, amount) {
+      player.contributedTowardsToPlay += amount;
+
+    }
+
+    function resetContributed(player, amount) {
+      player.contributedTowardsToPlay = amount;
     }
 
     function handleRemoveFoldedPlayer(players) {
@@ -191,26 +189,6 @@
         return player;
       });
       handleRemoveFoldedPlayer(modifiedState.playerInfo);
-
-      // state.playerInfo.forEach(player => {
-      //   // name variables for below as if i were narrating
-      //   modifiedState.inHand.push()
-      //   // if((!player.playerTurn && player.bigBlind && !state.raised) || (!player.playerTurn && player.smallBlind && state.raised) ) {
-      //   //
-      //   //   console.log(player.id);
-      //   //   modifiedState.inHand = state.inHand.filter(item => player.id === item.id);
-      //   //   modifiedState.playerInfo = state.playerInfo.map(player => {
-      //   //     if (player.playerTurn) {
-      //   //       player.playerTurn = false;
-      //   //     }
-      //   //     return player;
-      //   //   })
-      //   // }
-      //   else if (!player.playerTurn && !player.bigBlind && !state.raised) {
-      //     alert("Can't fold");
-      //
-      //   }
-      // });
     }
 
     function handleFold() {
@@ -222,26 +200,8 @@
           // this will only work for heads up
           // try resetting emptying modifiedState.inHand and pushing players how did not fold
           removeFoldedPlayer();
-          // state.playerInfo.forEach(player => {
-          //   // name variables for below as if i were narrating
-          //   if((!player.playerTurn && player.bigBlind && !state.raised) || (!player.playerTurn && player.smallBlind && state.raised) ) {
-          //
-          //     console.log(player.id);
-          //     modifiedState.inHand = state.inHand.filter(item => player.id === item.id);
-          //     modifiedState.playerInfo = state.playerInfo.map(player => {
-          //       if (player.playerTurn) {
-          //         player.playerTurn = false;
-          //       }
-          //       return player;
-          //     })
-          //   }
-          //   else if (!player.playerTurn && !player.bigBlind && !state.raised) {
-          //     alert("Can't fold");
-          //
-          //   }
-          // });
+
           if(modifiedState.inHand.length === 1) {
-            // modifiedState.handIndex++;
             // heads up logic
             // small blind folds heads up preflop
             // set id of winner
@@ -249,27 +209,9 @@
             //pass id of winner to reward winner
             rewardWinner(winner);
             // this is heads up so blinds will be switched instead of rotated
-            // switchBlinds();
-              // modifiedState.playerInfo = state.playerInfo.map(player => {
 
-              //   if(player.smallBlind) {
-              //     player.smallBlind = false;
-              //     player.bigBlind = true;
-              //     player.stackSize -= state.maxBuyIn/100;
-              //   }
-              //   else if (player.bigBlind) {
-              //     player.smallBlind = true;
-              //     player.playerTurn = true;
-              //     player.bigBlind = false;
-              //     player.stackSize -= state.maxBuyIn/200;
-              //   }
-              //   return player;
-              // });
-              // modifiedState.potSize = (state.maxBuyIn/100) + (state.maxBuyIn/200);
-              // addAllPlayersToHand();
               setUpNextHand();
 
-            // alert('Next hand.  Blinds Placed')
           }
         }
       }
@@ -280,34 +222,18 @@
       modifiedState.playerInfo = state.playerInfo.map(player => {
         if(player.playerTurn && player.smallBlind) {
           removeFromStack(player, smallBlind);
-
+          setContributedTowards(player, smallBlind);
         }
         return player;
       })
       switchTurns();
       modifiedState.completed = true;
-      // modifiedState.playerInfo = state.playerInfo.map(player => {
-      //   if(player.playerTurn && player.smallBlind) {
-      //     player.playerTurn = false;
-      //     // player.stackSize -= (state.maxBuyIn/200);
-      //     modifiedState.potSize += (state.maxBuyIn/200);
-      //     player.contributedTowardsToPlay += (state.maxBuyIn/200);
-      //   }
-      //   else if(player.playerTurn && player.bigBlind) {
-      //     alert("Can't call")
-      //   }
-      //   else if (!player.playerTurn && player.bigBlind) {
-      //     player.playerTurn = true;
-      //   }
-      //   return player;
-      // })
     }
 
     function handleCall() {
       // small blind calls heads up
       let callAmount = 0;
       let allInRefund = 0;
-      //let playerInfo = state.playerInfo;
       if(state.headsUp) {
         if(state.street === 'Preflop') {
           if (!state.raised) {
@@ -327,10 +253,7 @@
                 if(player.stackSize - (state.toPlay - player.contributedTowardsToPlay) >= 0) {
                   amount = state.toPlay - player.contributedTowardsToPlay;
                   removeFromStack(player, amount);
-                  // player.stackSize -= state.toPlay - player.contributedTowardsToPlay;
-                  // player.contributedTowardsToPlay += (state.toPlay - (state.maxBuyIn/100));
-                  // callAmount = (state.toPlay - (state.maxBuyIn/100));
-                  // callAmount = (state.toPlay - (state.maxBuyIn/100));
+
                   player.contributedTowardsToPlay = state.toPlay;
 
                   console.log('contributedtowards', player.contributedTowardsToPlay);
@@ -338,22 +261,26 @@
                 else {
                   allInRefund = (state.toPlay - player.contributedTowardsToPlay) - player.stackSize;
                   console.log('allinrefund', allInRefund);
-                  callAmount = player.stackSize
+                  amount = player.stackSize
                   player.stackSize = 0;
                 }
               }
               return player;
             })
-            modifiedState.playerInfo.forEach(player => {
+            // modifiedState.playerInfo.forEach(player => {
+            //   if(!player.playerTurn) {
+            //     player.stackSize += allInRefund;
+            //   }
+            // })
+            modifiedState.playerInfo = modifiedState.playerInfo.map(player => {
               if(!player.playerTurn) {
                 player.stackSize += allInRefund;
               }
             })
             // substitute this with callamount.
-            //modifiedState.potSize += (state.toPlay - (state.maxBuyIn/100));
-            // modifiedState.potSize += (callAmount - allInRefund);
-            addToPot(amount - allInRefund);
-            // modifiedState.street = "Flop";
+            console.log('amount', amount);
+            console.log('allinrefund', allInRefund);
+            addToPot(amount);
             incrementStreet();
             modifiedState.playerInfo.forEach(player => {
               if(player.stackSize === 0) {
@@ -374,10 +301,6 @@
                   alert('Game over.');
                 }
               }
-
-              // if(winner > state.playerInfo.length) {
-              //
-              // }
             }
           }
         }
@@ -394,7 +317,7 @@
         console.log('amountraised', modifiedState.amountRaised);
         modifiedState.toPlay = amount;
         console.log('toplay', modifiedState.toPlay);
-        modifiedState.potSize += (amount - state.maxBuyIn/200);
+        addToPot(amount - state.maxBuyIn/200);
         modifiedState.preFlopThreeBet = true;
         //Repeating yourself here.  add smallblind to func as an arg
         modifiedState.playerInfo = state.playerInfo.map(player => {
@@ -437,10 +360,8 @@
         }
       });
       console.log('currentcontribution', currentContribution);
-      //if(action.amount >= state.toPlay * 2 - 1) {
       toAdd = modifiedState.toPlay - currentContribution;
       modifiedState.potSize += toAdd;
-      //}
     }
 
     function preFlopThreeBetSubtract() {
@@ -471,20 +392,11 @@
     }
 
     function handleRaise() {
-      // modifiedState.toPlay = action.amount; need to plug this in somewhere
       // repeating yourself
       amount = parseInt(action.amount, 10);
       let unraised = !state.raised;
       let pF = state.street === 'Preflop';
 
-      //
-      // if(!state.raised && action.amount < (state.toPlay * 2)) {
-      //   alert("Must raise at least twice the big blind or twice the" +
-      //   " bet or raise.");
-      // } else if (state.raised && action.amount < (state.toPlay * 2 - 1)) {
-      //   alert("Must raise at least twice the big blind or twice the" +
-      //   " bet or raise.");
-      // }
       if(pF) {
         if(unraised) {
           if(action.amount >= (state.toPlay * 2)) {
@@ -507,7 +419,7 @@
                   modifiedState.playerInfo = state.playerInfo.map(player => {
                     if(player.playerTurn && player.smallBlind) {
                       if(player.stackSize - (action.amount - state.maxBuyIn/200) >= 0) {
-                        // player.playerTurn = false;
+
                         // modifying element outside of array, probably not good
                         modifiedState.raised = true;
                         player.stackSize -= (action.amount - state.maxBuyIn/200);
@@ -521,9 +433,7 @@
                       }
                     }
                     //instead use switch turn function
-                    // else if (!player.playerTurn) {
-                    //   player.playerTurn = true;
-                    // }
+
                     return player;
                   })
                   switchTurns();
@@ -563,26 +473,7 @@
     switch (action.type) {
       case actions.BEGIN_GAME:
         handleBeginGame();
-        // console.log('working');
-        //   state.playerInfo.forEach(player => {
-        //
-        //       modifiedState.inHand.push({id: player.id});
-        //
-        //   })
-        // console.log('inhandpushtest', modifiedState.inHand);
-        // modifiedState.potSize += (state.maxBuyIn/100) + (state.maxBuyIn/200);
-        // modifiedState.playerInfo = state.playerInfo.map(player => {
-        //   // console.log(player);
-        //   if(player.smallBlind === true) {
-        //     player.stackSize -= (state.maxBuyIn/200);
-        //     // return player
-        //   }
-        //   else if (player.bigBlind === true) {
-        //     player.stackSize -= (state.maxBuyIn/100);
-        //     // return player;
-        //   }
-        //   return player;
-        // });
+
         break;
       case actions.FOLD:
           handleFold();
@@ -600,20 +491,9 @@
                 }
                 // Big Blind checks preflop
                 else if (state.playerInfo[i].bigBlind && state.playerInfo[i].playerTurn) {
-                  // console.log('checking');
                   modifiedState.street = "Flop";
                 }
-                 //else {
-                  // preflop heads up big blind checks
-                //  console.log('checking');
-                 // if (state.street === 'Preflop' && state.toPlay = state.maxBuyIn/100) {
-                 //    for(var i = 0 ; i < state.playerInfo.length; i++) {
-                 //      if (state.playerInfo[i].bigBlind) {
-                 //        modifiedState.street = 'Flop';
-                 //      }
-                 //    }
-                 //  }
-                //}
+
               }
             }
             break;
@@ -623,68 +503,7 @@
             break;
           case actions.RAISE:
             handleRaise();
-                // //                modifiedState.toPlay = action.amount; need to plug this in somewhere
-                //
-                // if(action.amount < (state.toPlay * 2)) {
-                //   alert("Must raise at least twice the big blind or twice the" +
-                //   " bet or raise.");
-                // }
-                // if(action.amount >= (state.toPlay * 2)) {
-                //   console.log('raising');
-                //   //raise from small blind heads up
-                //   let pF = state.street === 'Preflop';
-                //   let unraised = !state.raised;
-                //   if(state.headsUp) {
-                //     for (i=0; i<state.playerInfo.length; i++) {
-                //       if(unraised) {
-                //         if(pF) {
-                //           if(state.playerInfo[i].playerTurn && state.playerInfo[i].smallBlind) {
-                //             if(state.playerInfo[i].stackSize - (action.amount - state.maxBuyIn/200) >= 0) {
-                //               modifiedState.toPlay = action.amount
-                //               modifiedState.potSize += (action.amount - state.maxBuyIn/200);
-                //             } else {
-                //               alert('Not enough funds');
-                //             }
-                //
-                //           } else if(state.playerInfo[i].playerTurn && state.playerInfo[i].bigBlind) {
-                //             if(state.playerInfo[i].stackSize - (action.amount - state.maxBuyIn/100) >= 0) {
-                //               modifiedState.toPlay = action.amount
-                //               modifiedState.potSize += (action.amount - state.maxBuyIn/100);
-                //             } else {
-                //               alert('Not enough funds');
-                //             }
-                //           }
-                //         }
-                //       }
-                //     }
-                //     if(unraised) {
-                //       if(pF) {
-                //         modifiedState.playerInfo = state.playerInfo.map(player => {
-                //           if(player.playerTurn && player.smallBlind) {
-                //             if(player.stackSize - (action.amount - state.maxBuyIn/200) >= 0) {
-                //               player.playerTurn = false;
-                //               modifiedState.raised = true;
-                //               player.stackSize -= (action.amount - state.maxBuyIn/200);
-                //             }
-                //           }
-                //           else if(player.playerTurn && player.bigBlind) {
-                //             if(player.stackSize - (action.amount - state.maxBuyIn/100) >= 0) {
-                //               player.playerTurn = false;
-                //               modifiedState.raised = true;
-                //               player.stackSize -= (action.amount - state.maxBuyIn/100);
-                //             }
-                //           }
-                //           else if (!player.playerTurn && modifiedState.raised) {
-                //             player.playerTurn = true;
-                //           }
-                //           return player;
-                //         })
-                //       }
-                //     }
-                //
-                //   }
-                //
-                // }
+
                 break;
                 default:
                   console.log('No action chosen');
