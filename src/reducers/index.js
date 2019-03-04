@@ -7,6 +7,7 @@
       amountRaised: 0,
       currentRaise: 0,
       toCall: 1,
+      completed: false,
       preFlopThreeBet: false,
       handIndex: 1,
       handOver: false,
@@ -57,6 +58,8 @@
     let toAdd = 0;
     let currentContribution = 0;
     let amount = 0;
+    let smallBlind = state.maxBuyIn / 200;
+    let bigBlind = state.maxBuyIn / 100;
 
     function addAllPlayersToHand() {
       modifiedState.inHand = [];
@@ -151,6 +154,20 @@
         }
         return player;
       })
+    }
+
+    function addToPot(amount) {
+      modifiedState.potSize += amount;
+    }
+
+    function removeFromStack(player, amount) {
+      player.stackSize -= amount;
+      // modifiedState.playerInfo = state.playerInfo.map(player => {
+      //   if (player.playerTurn && player.smallBlind) {
+      //     player.stackSize -= amount;
+      //   }
+      //   return player;
+      // })
     }
 
     function handleRemoveFoldedPlayer(players) {
@@ -259,21 +276,31 @@
     }
 
     function smallBlindCompletes() {
+      addToPot(smallBlind);
       modifiedState.playerInfo = state.playerInfo.map(player => {
         if(player.playerTurn && player.smallBlind) {
-          player.playerTurn = false;
-          player.stackSize -= (state.maxBuyIn/200);
-          modifiedState.potSize += (state.maxBuyIn/200);
-          player.contributedTowardsToPlay += (state.maxBuyIn/200);
-        }
-        else if(player.playerTurn && player.bigBlind) {
-          alert("Can't call")
-        }
-        else if (!player.playerTurn && player.bigBlind) {
-          player.playerTurn = true;
+          removeFromStack(player, smallBlind);
+
         }
         return player;
       })
+      switchTurns();
+      modifiedState.completed = true;
+      // modifiedState.playerInfo = state.playerInfo.map(player => {
+      //   if(player.playerTurn && player.smallBlind) {
+      //     player.playerTurn = false;
+      //     // player.stackSize -= (state.maxBuyIn/200);
+      //     modifiedState.potSize += (state.maxBuyIn/200);
+      //     player.contributedTowardsToPlay += (state.maxBuyIn/200);
+      //   }
+      //   else if(player.playerTurn && player.bigBlind) {
+      //     alert("Can't call")
+      //   }
+      //   else if (!player.playerTurn && player.bigBlind) {
+      //     player.playerTurn = true;
+      //   }
+      //   return player;
+      // })
     }
 
     function handleCall() {
@@ -284,39 +311,35 @@
       if(state.headsUp) {
         if(state.street === 'Preflop') {
           if (!state.raised) {
-            smallBlindCompletes();
-
+            if(!state.completed) {
+              smallBlindCompletes();
+            }
+            else {
+              alert("Can't call here.  Check or raise.")
+            }
           } else {
             // big blind calls raise heads up
+
             console.log('statetoplay', state.toPlay);
             modifiedState.playerInfo = state.playerInfo.map(player => {
-              // if (player.playerTurn) {
-              //   // handle modifying caller's stack
-              //   if (player.stackSize - (state.toPlay - (state.maxBuyIn/100)) >= 0) {
-              //     player.stackSize -= (state.toPlay - (state.maxBuyIn/100));
-              //     player.contributedTowardsToPlay += (state.toPlay - (state.maxBuyIn/100));
-              //     callAmount = (state.toPlay - (state.maxBuyIn/100));
-              //   } else {
-              //     // handles modifying callers stack and setting all in refund and cll amount if
-              //     // if opponent's raise is more than the amount in caller's stack
-              //     allInRefund = (state.toPlay - (state.maxBuyIn/100)) - player.stackSize;
-              //     console.log(allInRefund);
-              //     callAmount = player.stackSize
-              //     player.stackSize = 0;
-              //
-              //   }
-              // }
+
               if(player.playerTurn) {
                 if(player.stackSize - (state.toPlay - player.contributedTowardsToPlay) >= 0) {
-                  player.stackSize -= state.toPlay - player.contributedTowardsToPlay;
-                  player.contributedTowardsToPlay += (state.toPlay - (state.maxBuyIn/100));
-                  callAmount = (state.toPlay - (state.maxBuyIn/100));
+                  amount = state.toPlay - player.contributedTowardsToPlay;
+                  removeFromStack(player, amount);
+                  // player.stackSize -= state.toPlay - player.contributedTowardsToPlay;
+                  // player.contributedTowardsToPlay += (state.toPlay - (state.maxBuyIn/100));
+                  // callAmount = (state.toPlay - (state.maxBuyIn/100));
+                  // callAmount = (state.toPlay - (state.maxBuyIn/100));
+                  player.contributedTowardsToPlay = state.toPlay;
+
+                  console.log('contributedtowards', player.contributedTowardsToPlay);
                 }
                 else {
-                      allInRefund = (state.toPlay - player.contributedTowardsToPlay) - player.stackSize;
-                      console.log('allinrefund', allInRefund);
-                      callAmount = player.stackSize
-                      player.stackSize = 0;
+                  allInRefund = (state.toPlay - player.contributedTowardsToPlay) - player.stackSize;
+                  console.log('allinrefund', allInRefund);
+                  callAmount = player.stackSize
+                  player.stackSize = 0;
                 }
               }
               return player;
@@ -328,7 +351,8 @@
             })
             // substitute this with callamount.
             //modifiedState.potSize += (state.toPlay - (state.maxBuyIn/100));
-            modifiedState.potSize += (callAmount - allInRefund);
+            // modifiedState.potSize += (callAmount - allInRefund);
+            addToPot(amount - allInRefund);
             // modifiedState.street = "Flop";
             incrementStreet();
             modifiedState.playerInfo.forEach(player => {
