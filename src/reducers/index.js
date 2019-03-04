@@ -5,7 +5,7 @@
       playerCount: 2,
       toPlay: 1,
       amountRaised: 0,
-      currentRaise: 0,
+    //  currentRaise: 0,
       toCall: 1,
       completed: false,
       preFlopThreeBet: false,
@@ -109,7 +109,7 @@
       modifiedState.playerInfo = modifiedState.playerInfo.map(player => {
         if(player.playerTurn) {
           player.playerTurn = false;
-        }else {
+        } else {
           player.playerTurn = true;
         }
         return player;
@@ -118,11 +118,16 @@
 
     function incrementStreet() {
       modifiedState.street = "Flop";
+      modifiedState.toPlay = 0;
+      modifiedState.amountRaised = 0;
+      modifiedState.raised = false;
       modifiedState.playerInfo = state.playerInfo.map(player => {
         if(player.smallBlind) {
           player.playerTurn = false;
+          resetContributed(player, 0);
         } else if (player.bigBlind) {
           player.playerTurn = true;
+          resetContributed(player, 0);
         }
         return player;
       })
