@@ -6,61 +6,7 @@ import {call, fold, raise, check} from './actions';
 export class PlayerDecision extends Component {
   fold() {
     this.props.dispatch(fold());
-    // if(this.props.inHand.length === 1) {
-    //   console.log('1 in hand');
-    // }
-    //check if hand is over
-    // console.log(playerCount);
-    // this.props.dispatch(fold(playerIndex));
-
-    // console.log(this.props.playerInfo);
-    // console.log('button working');
-    // let playerInfo = this.props.playerInfo;
-    // console.log(playerInfo);
-    // console.log('fold working');
-    // let inHandCount = 0;
-
-    // for (var i = 0; i < playerInfo.length; i++) {
-    //   if(playerInfo[i].inHand === true) {
-    //     inHandCount++;
-    //   }
-    // }
-    // console.log(inHandCount);
-    //
-    // if(inHandCount === 2) {
-    //   function switchBlinds(player) {
-    //     if(player.smallBlind) {
-    //       player.smallBlind = false;
-    //       player.bigBlind = true;
-    //     }
-    //     else if (player.bigBlind) {
-    //       player.smallBlind = true;
-    //       player.bigBlind = false;
-    //     }
-    //   }
-    //   console.log('heads up fold working');
-    //   playerInfo = playerInfo.map(player => {
-    //     if(player.playerTurn === true) {
-    //       player.playerTurn = false;
-    //       player.inHand = false;
-    //       switchBlinds(player);
-    //       inHandCount--;
-    //     }
-    //     else if(player.playerTurn === false && player.inHand === true && inHandCount === 1) {
-    //       switchBlinds(player);
-    //       player.stackSize += this.props.potSize;
-    //     }
-    //     return player;
-    //   });
-    //
-    //   if(inHandCount === 1) {
-    //     console.log(playerInfo);
-    //     console.log('handcount is one');
-    //     this.props.dispatch(beginHand(playerInfo));
-    //
-    //   }
-    // }
-
+  
   }
 
   call() {
@@ -151,7 +97,7 @@ export class PlayerDecision extends Component {
             id="raiseButton"
             className="button"
           >
-            Raise
+            Bet/Raise
           </button>
         </form>
       </div>
