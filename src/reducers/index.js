@@ -234,6 +234,17 @@
       }
     }
 
+    function setHasChecked() {
+      modifiedState.playerInfo = state.playerInfo.map(player => {
+        if(player.playerTurn) {
+          player.hasChecked = true;
+          modifiedState.checkedPlayers++;
+        }
+        return player;
+      });
+      switchTurns();
+    }
+
     function handleCheck() {
       console.log(state.street);
       if(state.street === 'Preflop') {
@@ -248,17 +259,35 @@
           }
 
         }
-      } else {
+      } else if (state.street === 'River') {
+        setHasChecked();
+        if(modifiedState.checkedPlayers === modifiedState.inHand.length) {
+          console.log('rivering');
+          declareWinner();
+
+          for(i = 0; i<state.inHand.length; i++) {
+
+            if (state.inHand[i].id === winner) {
+              rewardWinner(winner);
+            }
+            if(modifiedState.playerInfo[i].stackSize === 0) {
+              alert('Game over.');
+            }
+          }
+        }
+      }
+      else {
         console.log('checking');
         // there has to be a better way to do this
-        modifiedState.playerInfo = state.playerInfo.map(player => {
-          if(player.playerTurn) {
-            player.hasChecked = true;
-            modifiedState.checkedPlayers++;
-          }
-          return player;
-        });
-        switchTurns();
+        // modifiedState.playerInfo = state.playerInfo.map(player => {
+        //   if(player.playerTurn) {
+        //     player.hasChecked = true;
+        //     modifiedState.checkedPlayers++;
+        //   }
+        //   return player;
+        // });
+        // switchTurns();
+        setHasChecked();
         if(modifiedState.checkedPlayers === modifiedState.inHand.length) {
             incrementStreet();
           }
