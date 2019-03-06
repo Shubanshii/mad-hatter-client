@@ -49,7 +49,8 @@
       positions: ["Dealer", "Big Blind"],
       position: "Dealer",
       dealer: 'Player 1',
-      maxBuyIn: 100
+      maxBuyIn: 100,
+      gameOver: false
       // playerTurn: 'Player 1',
   };
 
@@ -58,6 +59,7 @@
     let modifiedState = Object.assign({}, state, {});
     let mustDeclareWinner = false;
     let winner;
+    let refund = 0;
     let toAdd = 0;
     let currentContribution = 0;
     let amount = 0;
@@ -97,6 +99,8 @@
     }
 
     function setUpNextHand() {
+      mustDeclareWinner = false;
+      modifiedState.raised = false;
       modifiedState.handIndex++;
       modifiedState.street = "Preflop";
       addAllPlayersToHand();
@@ -105,7 +109,25 @@
       modifiedState.potSize = 0;
       modifiedState.completed = false;
       addToPot(smallBlind + bigBlind);
-      alert('Next hand.  Blinds Placed');
+      modifiedState.playerInfo = modifiedState.playerInfo.map(player => {
+        if(player.stackSize <= 0) {
+          if(player.smallBlind) {
+            refund += Math.abs(player.stackSize);
+            player.stackSize = 0;
+            mustDeclareWinner = true;
+          }
+
+        }
+        return player;
+      });
+      modifiedState.potSize -= refund;
+      if(mustDeclareWinner) {
+        allInAlert();
+        declareAndRewardWinner();
+        mustDeclareWinner = false;
+      } else {
+        alert('Next hand.  Blinds Placed');
+      }
     }
 
     function switchTurns() {
@@ -183,6 +205,25 @@
 
     function resetContributed(player, amount) {
       player.contributedTowardsToPlay = amount;
+    }
+
+    function checkForZeroStack() {
+      console.log('checkingrorzero');
+      modifiedState.playerInfo.forEach(player => {
+        if(player.stackSize === 0) {
+          mustDeclareWinner = true;
+        }
+
+      })
+      if(mustDeclareWinner) {
+        allInAlert();
+        declareAndRewardWinner();
+
+      }
+    }
+
+    function allInAlert() {
+      alert('Player All In');
     }
 
     function handleRemoveFoldedPlayer(players) {
@@ -263,17 +304,18 @@
         setHasChecked();
         if(modifiedState.checkedPlayers === modifiedState.inHand.length) {
           console.log('rivering');
-          declareWinner();
-
-          for(i = 0; i<state.inHand.length; i++) {
-
-            if (state.inHand[i].id === winner) {
-              rewardWinner(winner);
-            }
-            if(modifiedState.playerInfo[i].stackSize === 0) {
-              alert('Game over.');
-            }
-          }
+          declareAndRewardWinner();
+          // declareWinner();
+          //
+          // for(i = 0; i<state.inHand.length; i++) {
+          //
+          //   if (state.inHand[i].id === winner) {
+          //     rewardWinner(winner);
+          //   }
+          //   if(modifiedState.playerInfo[i].stackSize === 0) {
+          //     alert('Game over.');
+          //   }
+          // }
         }
       }
       else {
@@ -312,6 +354,7 @@
       })
       switchTurns();
       modifiedState.completed = true;
+      checkForZeroStack();
     }
 
     function handleCall() {
@@ -334,7 +377,7 @@
             modifiedState.playerInfo = state.playerInfo.map(player => {
 
               if(player.playerTurn) {
-                if(player.stackSize - (state.toPlay - player.contributedTowardsToPlay) >= 0) {
+                if(player.stackSize - (state.toPlay - player.contributedTowardsToPlay) > 0) {
                   amount = state.toPlay - player.contributedTowardsToPlay;
                   removeFromStack(player, amount);
 
@@ -344,6 +387,9 @@
                 }
                 else {
                   allInRefund = (state.toPlay - player.contributedTowardsToPlay) - player.stackSize;
+                  console.log('loggingstate', state.toPlay);
+                  console.log('logging playercontributed', player.contributedTowardsToPlay);
+                  console.log('loggin stack', player.stackSize);
                   console.log('allinrefund', allInRefund);
                   amount = player.stackSize
                   player.stackSize = 0;
@@ -351,11 +397,6 @@
               }
               return player;
             })
-            // modifiedState.playerInfo.forEach(player => {
-            //   if(!player.playerTurn) {
-            //     player.stackSize += allInRefund;
-            //   }
-            // })
             modifiedState.playerInfo = modifiedState.playerInfo.map(player => {
               if(!player.playerTurn) {
                 player.stackSize += allInRefund;
@@ -365,8 +406,9 @@
             // substitute this with callamount.
             console.log('amount', amount);
             console.log('allinrefund', allInRefund);
-            addToPot(amount);
-            incrementStreet();
+            console.log('moddypot', modifiedState.potSize);
+            addToPot(amount - allInRefund);
+
             modifiedState.playerInfo.forEach(player => {
               if(player.stackSize === 0) {
                 mustDeclareWinner = true;
@@ -374,18 +416,11 @@
               console.log('calleachplayer', player);
             })
             if(mustDeclareWinner) {
+              allInAlert();
+              declareAndRewardWinner();
 
-              declareWinner();
-
-              for(i = 0; i<state.inHand.length; i++) {
-
-                if (state.inHand[i].id === winner) {
-                  rewardWinner(winner);
-                }
-                if(modifiedState.playerInfo[i].stackSize === 0) {
-                  alert('Game over.');
-                }
-              }
+            } else {
+              incrementStreet();
             }
           }
         }
@@ -408,6 +443,7 @@
         modifiedState.playerInfo = state.playerInfo.map(player => {
           if(player.smallBlind && player.playerTurn) {
             player.contributedTowardsToPlay = amount;
+            //100.5
           }
           return player;
         })
@@ -478,7 +514,8 @@
 
     function handleRaise() {
       // repeating yourself
-      amount = parseInt(action.amount, 10);
+      amount = parseFloat(action.amount);
+      console.log('logging amount for decimal', amount);
       let unraised = !state.raised;
       let pF = state.street === 'Preflop';
 
@@ -555,6 +592,27 @@
         }
         return player;
       })
+      console.log('checking stack size', modifiedState.playerInfo);
+    }
+
+    function declareAndRewardWinner() {
+      declareWinner();
+
+      for(i = 0; i<state.inHand.length; i++) {
+
+        if (state.inHand[i].id === winner) {
+          rewardWinner(winner);
+        }
+        if(modifiedState.playerInfo[i].stackSize === 0) {
+          modifiedState.gameOver = true;
+        }
+
+      }
+      if(modifiedState.gameOver) {
+        alert('Game over.');
+      } else {
+        setUpNextHand();
+      }
     }
     switch (action.type) {
       case actions.BEGIN_GAME:
