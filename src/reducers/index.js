@@ -66,6 +66,8 @@
     let smallBlind = state.maxBuyIn / 200;
     let bigBlind = state.maxBuyIn / 100;
     let i = 0;
+    let unraised = !state.raised;
+    let pF = state.street === 'Preflop';
 
     function addAllPlayersToHand() {
       modifiedState.inHand = [];
@@ -512,60 +514,113 @@
       switchTurns();
     }
 
+    function handlePreflopRaise() {
+      if(unraised) {
+        if(action.amount >= (state.toPlay * 2)) {
+          console.log('raising');
+          //raise from small blind heads up
+          if(state.headsUp) {
+            for (i=0; i<state.playerInfo.length; i++) {
+
+                if(pF) {
+                  if(state.playerInfo[i].playerTurn && state.playerInfo[i].smallBlind) {
+                    smallBlindOpenRaises();
+
+                  } else if(state.playerInfo[i].playerTurn && state.playerInfo[i].bigBlind) {
+                    bigBlindOpenRaises();
+                  }
+                }
+            }
+
+
+                modifiedState.playerInfo = state.playerInfo.map(player => {
+                  if(player.playerTurn && player.smallBlind) {
+                    if(player.stackSize - (action.amount - state.maxBuyIn/200) >= 0) {
+
+                      // modifying element outside of array, probably not good
+                      modifiedState.raised = true;
+                      removeFromStack(player, (action.amount - state.maxBuyIn/200));
+                    }
+                  }
+                  else if(player.playerTurn && player.bigBlind) {
+                    if(player.stackSize - (action.amount - state.maxBuyIn/100) >= 0) {
+                      // player.playerTurn = false;
+                      modifiedState.raised = true;
+                      removeFromStack(player, (action.amount - state.maxBuyIn/100));
+                    }
+                  }
+                  //instead use switch turn function
+
+                  return player;
+                })
+                switchTurns();
+          }
+        }
+      }
+      else if(!unraised && state.preFlopThreeBet) {
+        preFlopThreeBet();
+      }
+
+    }
+
+    function handleFlopTurnRiverRaise() {
+      if(unraised) {
+        state.playerInfo.forEach(player => {
+          if(player.playerTurn && player.stackSize >= amount) {
+            modifiedState.amountRaised = amount;
+            modifiedState.toPlay = amount;
+            addToPot(amount);
+            modifiedState.raised = true;
+          }
+        });
+        modifiedState.playerInfo = state.playerInfo.map(player => {
+          if(player.playerTurn && player.stackSize >= amount) {
+            removeFromStack(player, amount);
+            setContributedTowards(player, amount);
+          }
+          return player;
+        });
+
+        switchTurns();
+      } else {
+        state.playerInfo.forEach(player => {
+          if(player.playerTurn && player.stackSize >= (amount - player.contributedTowardsToPlay)) {
+            // modifiedState.toPlay = amount;
+            // modifiedState.amountRaised = amount - player.contributedTowardsToPlay;
+            modifiedState.amountRaised = amount - modifiedState.toPlay;
+            modifiedState.toPlay = amount;
+            console.log("how much is it adding/subbing", amount - player.contributedTowardsToPlay);
+            addToPot(amount - player.contributedTowardsToPlay);
+          }
+        });
+        modifiedState.playerInfo = state.playerInfo.map(player => {
+          if(player.playerTurn && player.stackSize >= amount) {
+            removeFromStack(player, amount - player.contributedTowardsToPlay);
+            setContributedTowards(player, amount);
+          }
+          return player;
+        });
+
+        switchTurns();
+      }
+      // modifiedState.playerInfo = state.playerInfo.map(player => {
+      //   if(player.playerTurn && player.stack) {
+      //
+      //   }
+      // })
+    }
+
     function handleRaise() {
       // repeating yourself
       amount = parseFloat(action.amount);
       console.log('logging amount for decimal', amount);
-      let unraised = !state.raised;
-      let pF = state.street === 'Preflop';
+
 
       if(pF) {
-        if(unraised) {
-          if(action.amount >= (state.toPlay * 2)) {
-            console.log('raising');
-            //raise from small blind heads up
-            if(state.headsUp) {
-              for (i=0; i<state.playerInfo.length; i++) {
+        handlePreflopRaise();
 
-                  if(pF) {
-                    if(state.playerInfo[i].playerTurn && state.playerInfo[i].smallBlind) {
-                      smallBlindOpenRaises();
-
-                    } else if(state.playerInfo[i].playerTurn && state.playerInfo[i].bigBlind) {
-                      bigBlindOpenRaises();
-                    }
-                  }
-              }
-
-
-                  modifiedState.playerInfo = state.playerInfo.map(player => {
-                    if(player.playerTurn && player.smallBlind) {
-                      if(player.stackSize - (action.amount - state.maxBuyIn/200) >= 0) {
-
-                        // modifying element outside of array, probably not good
-                        modifiedState.raised = true;
-                        removeFromStack(player, (action.amount - state.maxBuyIn/200));
-                      }
-                    }
-                    else if(player.playerTurn && player.bigBlind) {
-                      if(player.stackSize - (action.amount - state.maxBuyIn/100) >= 0) {
-                        // player.playerTurn = false;
-                        modifiedState.raised = true;
-                        removeFromStack(player, (action.amount - state.maxBuyIn/100));
-                      }
-                    }
-                    //instead use switch turn function
-
-                    return player;
-                  })
-                  switchTurns();
-            }
-          }
-        }
-        else if(!unraised && state.preFlopThreeBet) {
-          preFlopThreeBet();
-        }
-
+      } else {
+        handleFlopTurnRiverRaise();
       }
 
     }

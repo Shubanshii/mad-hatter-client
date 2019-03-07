@@ -6,7 +6,7 @@ import {call, fold, raise, check} from './actions';
 export class PlayerDecision extends Component {
   fold() {
     this.props.dispatch(fold());
-  
+
   }
 
   call() {
@@ -48,6 +48,15 @@ export class PlayerDecision extends Component {
       } else {
         // minRaise = this.props.toPlay * 2 - 1;
         minRaise = this.props.toPlay + this.props.amountRaised;
+      }
+    } else {
+      if(!raised) {
+        minRaise = this.props.maxBuyIn / 100;
+        maxRaise = stackSize;
+      } else {
+        minRaise = this.props.toPlay + this.props.amountRaised;
+
+        maxRaise = contributed + stackSize;
       }
     }
 
@@ -110,6 +119,7 @@ PlayerDecision.defaultProps = {
 };
 
 const mapStateToProps = state => ({
+  maxBuyIn: state.maxBuyIn,
   playerInfo: state.playerInfo,
   potSize: state.potSize,
   handOver: state.handOver,
