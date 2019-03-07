@@ -68,6 +68,7 @@
     let i = 0;
     let unraised = !state.raised;
     let pF = state.street === 'Preflop';
+    let allInRefund = 0;
 
     function addAllPlayersToHand() {
       modifiedState.inHand = [];
@@ -359,72 +360,195 @@
       checkForZeroStack();
     }
 
+    function handlePreflopCall() {
+      if (!state.raised) {
+        if(!state.completed) {
+          smallBlindCompletes();
+        }
+        else {
+          alert("Can't call here.  Check or raise.")
+        }
+      } else {
+        // big blind calls raise heads up
+
+        console.log('statetoplay', state.toPlay);
+        modifiedState.playerInfo = state.playerInfo.map(player => {
+
+          if(player.playerTurn) {
+            if(player.stackSize - (state.toPlay - player.contributedTowardsToPlay) > 0) {
+              amount = state.toPlay - player.contributedTowardsToPlay;
+              removeFromStack(player, amount);
+
+              player.contributedTowardsToPlay = state.toPlay;
+
+              console.log('contributedtowards', player.contributedTowardsToPlay);
+            }
+            else {
+              allInRefund = (state.toPlay - player.contributedTowardsToPlay) - player.stackSize;
+              console.log('loggingstate', state.toPlay);
+              console.log('logging playercontributed', player.contributedTowardsToPlay);
+              console.log('loggin stack', player.stackSize);
+              console.log('allinrefund', allInRefund);
+              amount = player.stackSize
+              player.stackSize = 0;
+            }
+          }
+          return player;
+        })
+
+        // braek here
+        modifiedState.playerInfo = modifiedState.playerInfo.map(player => {
+          if(!player.playerTurn) {
+            player.stackSize += allInRefund;
+          }
+          return player;
+        })
+        // substitute this with callamount.
+        console.log('amount', amount);
+        console.log('allinrefund', allInRefund);
+        console.log('moddypot', modifiedState.potSize);
+        addToPot(amount - allInRefund);
+
+        modifiedState.playerInfo.forEach(player => {
+          if(player.stackSize === 0) {
+            mustDeclareWinner = true;
+          }
+          console.log('calleachplayer', player);
+        })
+        if(mustDeclareWinner) {
+          allInAlert();
+          declareAndRewardWinner();
+
+        } else {
+          incrementStreet();
+        }
+      }
+    }
+
+    function handleFlopTurnCall() {
+      if (!state.raised) {
+        alert("Can't call here.  Check or raise.");
+      } else {
+        modifiedState.playerInfo = state.playerInfo.map(player => {
+
+          if(player.playerTurn) {
+            if(player.stackSize - (state.toPlay - player.contributedTowardsToPlay) > 0) {
+              amount = state.toPlay - player.contributedTowardsToPlay;
+              removeFromStack(player, amount);
+
+              player.contributedTowardsToPlay = state.toPlay;
+
+              console.log('contributedtowards', player.contributedTowardsToPlay);
+            }
+            else {
+              allInRefund = (state.toPlay - player.contributedTowardsToPlay) - player.stackSize;
+              console.log('loggingstate', state.toPlay);
+              console.log('logging playercontributed', player.contributedTowardsToPlay);
+              console.log('loggin stack', player.stackSize);
+              console.log('allinrefund', allInRefund);
+              amount = player.stackSize
+              player.stackSize = 0;
+            }
+          }
+          return player;
+        });
+
+        modifiedState.playerInfo = modifiedState.playerInfo.map(player => {
+          if(!player.playerTurn) {
+            player.stackSize += allInRefund;
+          }
+          return player;
+        })
+        // substitute this with callamount.
+        console.log('amount', amount);
+        console.log('allinrefund', allInRefund);
+        console.log('moddypot', modifiedState.potSize);
+        addToPot(amount - allInRefund);
+        modifiedState.playerInfo.forEach(player => {
+          if(player.stackSize === 0) {
+            mustDeclareWinner = true;
+          }
+          console.log('calleachplayer', player);
+        })
+        if(mustDeclareWinner) {
+          allInAlert();
+          declareAndRewardWinner();
+
+        } else {
+          incrementStreet();
+        }
+      }
+
+    }
+
+    function handleRiverCall() {
+      if (!state.raised) {
+        alert("Can't call here.  Check or raise.");
+      } else {
+        modifiedState.playerInfo = state.playerInfo.map(player => {
+
+          if(player.playerTurn) {
+            if(player.stackSize - (state.toPlay - player.contributedTowardsToPlay) > 0) {
+              amount = state.toPlay - player.contributedTowardsToPlay;
+              removeFromStack(player, amount);
+
+              player.contributedTowardsToPlay = state.toPlay;
+
+              console.log('contributedtowards', player.contributedTowardsToPlay);
+            }
+            else {
+              allInRefund = (state.toPlay - player.contributedTowardsToPlay) - player.stackSize;
+              console.log('loggingstate', state.toPlay);
+              console.log('logging playercontributed', player.contributedTowardsToPlay);
+              console.log('loggin stack', player.stackSize);
+              console.log('allinrefund', allInRefund);
+              amount = player.stackSize
+              player.stackSize = 0;
+            }
+          }
+          return player;
+        });
+
+        modifiedState.playerInfo = modifiedState.playerInfo.map(player => {
+          if(!player.playerTurn) {
+            player.stackSize += allInRefund;
+          }
+          return player;
+        })
+        // substitute this with callamount.
+        console.log('amount', amount);
+        console.log('allinrefund', allInRefund);
+        console.log('moddypot', modifiedState.potSize);
+        addToPot(amount - allInRefund);
+        let playersAllIn = [];
+        modifiedState.playerInfo.forEach(player => {
+          if(player.stackSize === 0) {
+            playersAllIn.push(player);
+          }
+
+          console.log('calleachplayer', player);
+        });
+        if(playersAllIn.lenght === 1) {
+          alert('Player All In');
+        } else {
+          alert('Both players All In');
+        }
+
+          declareAndRewardWinner();
+
+      }
+    }
+
     function handleCall() {
       // small blind calls heads up
       // let callAmount = 0;
-      let allInRefund = 0;
       if(state.headsUp) {
         if(state.street === 'Preflop') {
-          if (!state.raised) {
-            if(!state.completed) {
-              smallBlindCompletes();
-            }
-            else {
-              alert("Can't call here.  Check or raise.")
-            }
-          } else {
-            // big blind calls raise heads up
-
-            console.log('statetoplay', state.toPlay);
-            modifiedState.playerInfo = state.playerInfo.map(player => {
-
-              if(player.playerTurn) {
-                if(player.stackSize - (state.toPlay - player.contributedTowardsToPlay) > 0) {
-                  amount = state.toPlay - player.contributedTowardsToPlay;
-                  removeFromStack(player, amount);
-
-                  player.contributedTowardsToPlay = state.toPlay;
-
-                  console.log('contributedtowards', player.contributedTowardsToPlay);
-                }
-                else {
-                  allInRefund = (state.toPlay - player.contributedTowardsToPlay) - player.stackSize;
-                  console.log('loggingstate', state.toPlay);
-                  console.log('logging playercontributed', player.contributedTowardsToPlay);
-                  console.log('loggin stack', player.stackSize);
-                  console.log('allinrefund', allInRefund);
-                  amount = player.stackSize
-                  player.stackSize = 0;
-                }
-              }
-              return player;
-            })
-            modifiedState.playerInfo = modifiedState.playerInfo.map(player => {
-              if(!player.playerTurn) {
-                player.stackSize += allInRefund;
-              }
-              return player;
-            })
-            // substitute this with callamount.
-            console.log('amount', amount);
-            console.log('allinrefund', allInRefund);
-            console.log('moddypot', modifiedState.potSize);
-            addToPot(amount - allInRefund);
-
-            modifiedState.playerInfo.forEach(player => {
-              if(player.stackSize === 0) {
-                mustDeclareWinner = true;
-              }
-              console.log('calleachplayer', player);
-            })
-            if(mustDeclareWinner) {
-              allInAlert();
-              declareAndRewardWinner();
-
-            } else {
-              incrementStreet();
-            }
-          }
+          handlePreflopCall();
+        } else if(state.street === "Flop" || state.street === "Turn") {
+          handleFlopTurnCall();
+        } else {
+          handleRiverCall();
         }
 
       }
