@@ -555,6 +555,25 @@
                 })
                 switchTurns();
           }
+        } else {
+          // if after placing blinds player has less than a blind left
+          console.log('player has less than a blind left');
+          modifiedState.toPlay = amount;
+          state.playerInfo.forEach(player => {
+            if(player.playerTurn) {
+              currentContribution = player.contributedTowardsToPlay;
+            }
+          });
+          toAdd = modifiedState.toPlay - currentContribution;
+          addToPot(toAdd);
+          modifiedState.playerInfo = state.playerInfo.map(player => {
+            if (player.playerTurn) {
+              removeFromStack(player, toAdd);
+            }
+            return player;
+          });
+          modifiedState.raised = true;
+          switchTurns();
         }
       }
       else if(!unraised && state.preFlopThreeBet) {

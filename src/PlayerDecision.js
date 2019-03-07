@@ -45,18 +45,38 @@ export class PlayerDecision extends Component {
     if (street === 'Preflop') {
       if(!raised) {
         minRaise = this.props.toPlay * 2;
+        console.log('contributed', contributed);
+        console.log('stacksize', stackSize);
+        if(stackSize + contributed < minRaise) {
+          minRaise = stackSize + contributed;
+          maxRaise = stackSize + contributed;
+        }
       } else {
         // minRaise = this.props.toPlay * 2 - 1;
+
         minRaise = this.props.toPlay + this.props.amountRaised;
+        if(stackSize + contributed < minRaise) {
+          console.log('stack of player 2', stackSize);
+          console.log('less than minraise');
+          minRaise = stackSize + contributed;
+          maxRaise = stackSize + contributed;
+        }
       }
     } else {
       if(!raised) {
         minRaise = this.props.maxBuyIn / 100;
         maxRaise = stackSize;
+        if(stackSize < minRaise) {
+          minRaise = stackSize;
+          maxRaise = stackSize;
+        }
       } else {
         minRaise = this.props.toPlay + this.props.amountRaised;
-
         maxRaise = contributed + stackSize;
+        if(stackSize + contributed < minRaise) {
+          minRaise = stackSize + contributed;
+          maxRaise = stackSize + contributed;
+        }
       }
     }
 
