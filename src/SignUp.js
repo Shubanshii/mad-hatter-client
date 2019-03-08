@@ -44,7 +44,7 @@ class SignUp extends Component {
           </div>
           {/*<a href="www.facebook.com"><button type='submit'>Sign Up</button></a>*/}
           <a href="/Home">Sign Up</a>
-      </form>
+      </form>sdf
 
       </div>
     );
