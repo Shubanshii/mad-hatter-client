@@ -126,7 +126,7 @@ export class PlayerDecision extends Component {
             id="raiseButton"
             className="button"
           >
-            Bet/Raise
+            Bet/Raise to
           </button>
         </form>
       </div>
