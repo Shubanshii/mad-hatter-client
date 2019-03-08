@@ -1,6 +1,7 @@
 // import {CHECK, CALL, BET, RAISE, FOLD, UPDATE_MODE, INCREASE_STACK_SIZE, DECREASE_STACK_SIZE, INCREASE_POT_SIZE, DECREASE_POT_SIZE,
 //   ROTATE_PLAYER, ROTATE_ROUND, END_HAND, ROTATE_DEALER} as actions from '../actions';
   import * as actions from '../actions';
+  console.log("This is the last version");
   const initialState = {
       playerCount: 2,
       toPlay: 1,
