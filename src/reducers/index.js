@@ -6,7 +6,6 @@
       playerCount: 2,
       toPlay: 1,
       amountRaised: 0,
-    //  currentRaise: 0,
       toCall: 1,
       completed: false,
       preFlopThreeBet: false,
