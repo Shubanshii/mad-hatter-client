@@ -739,7 +739,8 @@
         modifiedState.playerInfo = state.playerInfo.map(player => {
           if(player.playerTurn && player.stackSize >= amount) {
             removeFromStack(player, amount - player.contributedTowardsToPlay);
-            setContributedTowards(player, amount);
+            //setContributedTowards(player, amount);
+            player.contributedTowardsToPlay = amount;
           }
           return player;
         });
