@@ -256,26 +256,25 @@
       if(!state.raised && state.street !== "Preflop" ) {
         alert("Can't fold unless facing a raise or a bet.");
       }
-      else if (state.headsUp) {
-        if (state.street === "Preflop"){
-          // this will only work for heads up
-          // try resetting emptying modifiedState.inHand and pushing players how did not fold
-          removeFoldedPlayer();
+      else {
+        // this will only work for heads up
+        // try resetting emptying modifiedState.inHand and pushing players how did not fold
+        removeFoldedPlayer();
 
-          if(modifiedState.inHand.length === 1) {
-            // heads up logic
-            // small blind folds heads up preflop
-            // set id of winner
-            winner = modifiedState.inHand[0].id
-            //pass id of winner to reward winner
-            rewardWinner(winner);
-            // this is heads up so blinds will be switched instead of rotated
+        if(modifiedState.inHand.length === 1) {
+          // heads up logic
+          // small blind folds heads up preflop
+          // set id of winner
+          winner = modifiedState.inHand[0].id
+          //pass id of winner to reward winner
+          rewardWinner(winner);
+          // this is heads up so blinds will be switched instead of rotated
 
-              setUpNextHand();
+            setUpNextHand();
 
-          }
         }
       }
+
     }
 
     function setHasChecked() {
