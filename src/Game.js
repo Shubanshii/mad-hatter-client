@@ -11,8 +11,6 @@
   }
 
     render() {
-      //this.props.dispatch(beginHand());
-
 
       return (
         <div className="App">

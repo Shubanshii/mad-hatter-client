@@ -24,8 +24,8 @@ export class PlayerDecision extends Component {
   }
 
   render() {
-    // const playerCount = this.props.playerCount;
-    // const player = this.props.playerInfo.find(player => player.playerTurn === true);
+    //const playerCount = this.props.playerCount;
+  //  const player = this.props.playerInfo.find(player => player.playerTurn === true);
     console.log('raised', this.props.raised);
     console.log('street', this.props.street);
     let raised = this.props.raised;
@@ -73,6 +73,9 @@ export class PlayerDecision extends Component {
       } else {
         minRaise = this.props.toPlay + this.props.amountRaised;
         maxRaise = contributed + stackSize;
+        console.log('contributed', contributed);
+        console.log('stackSize', stackSize);
+
         if(stackSize + contributed < minRaise) {
           minRaise = stackSize + contributed;
           maxRaise = stackSize + contributed;
@@ -134,10 +137,10 @@ export class PlayerDecision extends Component {
   }
 }
 
-PlayerDecision.defaultProps = {
-    // title: 'Board'
-};
-
+// PlayerDecision.defaultProps = {
+//     // title: 'Board'
+// };
+//
 const mapStateToProps = state => ({
   maxBuyIn: state.maxBuyIn,
   playerInfo: state.playerInfo,
