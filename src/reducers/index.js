@@ -432,6 +432,7 @@
         modifiedState.playerInfo = state.playerInfo.map(player => {
 
           if(player.playerTurn) {
+            console.log('logging value of subtraction', player.stackSize - (state.toPlay - player.contributedTowardsToPlay));
             if(player.stackSize - (state.toPlay - player.contributedTowardsToPlay) > 0) {
               amount = state.toPlay - player.contributedTowardsToPlay;
               removeFromStack(player, amount);
@@ -737,7 +738,8 @@
           }
         });
         modifiedState.playerInfo = state.playerInfo.map(player => {
-          if(player.playerTurn && player.stackSize >= amount) {
+          if(player.playerTurn && player.stackSize + player.contributedTowardsToPlay >= amount) {
+            console.log('removing from stack');
             removeFromStack(player, amount - player.contributedTowardsToPlay);
             //setContributedTowards(player, amount);
             player.contributedTowardsToPlay = amount;
