@@ -518,9 +518,9 @@ export const hatterReducer = (state = initialState, action) => {
 
         console.log("calleachplayer", player);
       });
-      if (playersAllIn.lenght === 1) {
+      if (playersAllIn.length === 1) {
         alert("Player All In");
-      } else {
+      } else if(playersAllIn.length === 2){
         alert("Both players All In");
       }
 
